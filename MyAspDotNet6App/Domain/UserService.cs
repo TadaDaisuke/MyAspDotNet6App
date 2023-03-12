@@ -11,7 +11,7 @@ namespace MyAspDotNet6App.Domain
             _userRepository = userRepository;
         }
 
-        public IEnumerable<User> GetUsers(SearchCondition searchCondition)
+        public IEnumerable<User> GetUsers(UserSearchCondition? searchCondition)
         {
             return _userRepository.GetUsers(searchCondition);
         }

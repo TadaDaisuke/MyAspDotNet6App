@@ -4,6 +4,6 @@ namespace MyAspDotNet6App.Domain
 {
     public interface IUserService
     {
-        public IEnumerable<User> GetUsers(SearchCondition searchCondition);
+        public IEnumerable<User> GetUsers(UserSearchCondition? searchCondition);
     }
 }

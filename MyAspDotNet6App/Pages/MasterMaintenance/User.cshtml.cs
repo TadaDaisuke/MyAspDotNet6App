@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MyAspDotNet6App.Domain;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyAspDotNet6App.Pages.MasterMaintenance
 {
@@ -14,7 +15,7 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
         }
 
         [BindProperty]
-        public SearchCondition SearchCondition { get; set; }
+        public UserSearchCondition? SearchCondition { get; set; }
 
         public void OnGet()
         {
@@ -26,8 +27,9 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
         }
     }
 
-    public class SearchCondition
+    public class UserSearchCondition
     {
+        [Display(Name = "ÉÜÅ[ÉUÅ[ñº")]
         public string? UserNamePart { get; set; }
     }
 }
