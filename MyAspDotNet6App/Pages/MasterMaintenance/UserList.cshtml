@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Domain.User>
+@{
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>ユーザーID</th>
+            <th>ユーザー名</th>
+            <th>メールアドレス</th>
+        </tr>
+    </thead>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.UserId</td>
+            <td>@user.UserName</td>
+            <td>@user.MailAddress</td>
+        </tr>
+    }
+</table>

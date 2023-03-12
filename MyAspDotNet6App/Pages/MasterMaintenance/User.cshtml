@@ -1,0 +1,49 @@
+﻿@page
+@model MyAspDotNet6App.Pages.MasterMaintenance.UserModel
+@{
+    ViewData["Title"] = "ユーザーマスター";
+}
+<form>
+    <div class="row">
+        <div class="col-3">
+            <label asp-for="SearchCondition.UserNamePart"></label>
+            <input asp-for="SearchCondition.UserNamePart" type="text" />
+        </div>
+    </div>
+</form>
+@Html.AntiForgeryToken()
+<div class="row mt-2">
+    <div class="d-flex flex-row">
+        <button id="searchButton" class="btn btn-primary">
+            <i class="bi bi-search"></i> 検索
+        </button>
+    </div>
+</div>
+<div id="resultDiv" class="mt-2"></div>
+@section Scripts {
+    <script>
+        const token = document.querySelector("[name='__RequestVerificationToken']").value;
+        const searchButton = document.querySelector("#searchButton");
+        const resultDiv = document.querySelector("#resultDiv");
+        searchButton.addEventListener("click", () => {
+            let formData = new FormData(document.querySelector("form"));
+            fetch("?Handler=GetList", {
+                method: "POST",
+                headers: { RequestVerificationToken: token },
+                body: new URLSearchParams(formData)
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("読み込みに失敗しました");
+                    }
+                    return response.text();
+                })
+                .then((text) => {
+                    resultDiv.innerHTML = text;
+                })
+                .catch((error) => {
+                    resultDiv.innerHTML = "<div>" + error + "</div>";
+                });
+        });
+    </script>
+}
