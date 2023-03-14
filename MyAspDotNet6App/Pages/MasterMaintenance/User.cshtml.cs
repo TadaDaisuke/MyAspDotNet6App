@@ -33,6 +33,6 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
         public string? UserNamePart { get; set; }
 
         [Display(Name = "“üŽÐ“ú From")]
-        public DateTime? JoinedDateFrom { get; set; }
+        public DateTime? JoinedDateFrom { get; set; } // ASP.NET6‚Å‚Í‚Ü‚¾BindProperty‚ÉDateOnlyŒ^‚ÍŽg‚¦‚È‚¢
     }
 }

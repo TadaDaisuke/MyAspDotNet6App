@@ -42,7 +42,7 @@ namespace MyAspDotNet6App.SqlDataAccess
                         UserId = row["user_id"].ToInt(),
                         UserName = row["user_name"] ?? string.Empty,
                         MailAddress = row["mail_address"],
-                        JoinedDate = DateOnly.TryParse(row["joined_date"], out DateOnly d) ? d : null
+                        JoinedDate = row["joined_date"].ToNullableDateOnly()
                     })
                 .ToList();
         }
