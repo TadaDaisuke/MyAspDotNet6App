@@ -6,12 +6,16 @@
 <form>
     <div class="row">
         <div class="col-3">
-            <label asp-for="SearchCondition.UserNamePart"></label>
-            <input asp-for="SearchCondition.UserNamePart" type="text" />
+            <label asp-for="SearchCondition.UserNamePart" class="form-label"></label>
+            <input asp-for="SearchCondition.UserNamePart" type="text" class="form-control" />
+        </div>
+        <div class="col-3">
+            <label asp-for="SearchCondition.JoinedDateFrom" class="form-label"></label>
+            <input asp-for="SearchCondition.JoinedDateFrom" type="date" class="form-control" />
         </div>
     </div>
+    @Html.AntiForgeryToken()
 </form>
-@Html.AntiForgeryToken()
 <div class="row mt-2">
     <div class="d-flex flex-row">
         <button id="searchButton" class="btn btn-primary">
@@ -22,16 +26,11 @@
 <div id="resultDiv" class="mt-2"></div>
 @section Scripts {
     <script>
-        const token = document.querySelector("[name='__RequestVerificationToken']").value;
         const searchButton = document.querySelector("#searchButton");
         const resultDiv = document.querySelector("#resultDiv");
         searchButton.addEventListener("click", () => {
             let formData = new FormData(document.querySelector("form"));
-            fetch("?Handler=GetList", {
-                method: "POST",
-                headers: { RequestVerificationToken: token },
-                body: new URLSearchParams(formData)
-            })
+            fetch("?Handler=GetList", { method: "POST", body: new URLSearchParams(formData) })
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error("読み込みに失敗しました");

@@ -22,20 +22,27 @@ namespace MyAspDotNet6App.SqlDataAccess
                 .AppendLine("SELECT [user_id]")
                 .AppendLine("    ,[user_name]")
                 .AppendLine("    ,mail_address")
+                .AppendLine("    ,joined_date")
                 .AppendLine("FROM [user]")
                 .AppendLine("WHERE (")
                 .AppendLine("        @user_name_part IS NULL")
                 .AppendLine("        OR [user_name] LIKE N'%' + @user_name_part + N'%'")
                 .AppendLine("        )")
+                .AppendLine("    AND (")
+                .AppendLine("        @joined_date_from IS NULL")
+                .AppendLine("        OR @joined_date_from <= joined_date")
+                .AppendLine("        )")
                 .ToSqlCommand()
-                .AddParameter("@user_name_part", SqlDbType.NVarChar, searchCondition?.UserNamePart);
+                .AddParameter("@user_name_part", SqlDbType.NVarChar, searchCondition?.UserNamePart)
+                .AddParameter("@joined_date_from", SqlDbType.Date, searchCondition?.JoinedDateFrom);
             return _context.GetRowList(cmd)
                 .Select(row =>
                     new User()
                     {
                         UserId = row["user_id"].ToInt(),
                         UserName = row["user_name"] ?? string.Empty,
-                        MailAddress = row["mail_address"]
+                        MailAddress = row["mail_address"],
+                        JoinedDate = DateOnly.TryParse(row["joined_date"], out DateOnly d) ? d : null
                     })
                 .ToList();
         }

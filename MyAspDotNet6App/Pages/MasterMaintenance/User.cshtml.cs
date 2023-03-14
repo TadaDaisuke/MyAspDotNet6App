@@ -31,5 +31,8 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
     {
         [Display(Name = "ƒ†[ƒU[–¼")]
         public string? UserNamePart { get; set; }
+
+        [Display(Name = "“üĞ“ú From")]
+        public DateTime? JoinedDateFrom { get; set; }
     }
 }

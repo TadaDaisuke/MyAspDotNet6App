@@ -1,7 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Diagnostics;
-using System.Text;
 using static MyAspDotNet6App.SqlDataAccess.Common.Constants;
 
 namespace MyAspDotNet6App.SqlDataAccess
@@ -51,7 +49,7 @@ namespace MyAspDotNet6App.SqlDataAccess
                                 (colValue == null || colValue == DBNull.Value)
                                     ? null
                                     : colValue is DateTime dateTimeValue
-                                        ? dateTimeValue.ToString(DEFAULT_DATETIME_FORMAT)
+                                        ? dateTimeValue.ToString(reader.GetDataTypeName(index) == "date" ? DEFAULT_DATEONLY_FORMAT : DEFAULT_DATETIME_FORMAT)
                                         : colValue.ToString()
                             );
                         }
