@@ -1,17 +1,21 @@
 ﻿@page
-@model MyAspDotNet6App.Pages.MasterMaintenance.UserModel
+@model MyAspDotNet6App.Pages.MasterMaintenance.MemberModel
 @{
-    ViewData["Title"] = "ユーザーマスター";
+    ViewData["Title"] = "メンバーマスター";
 }
-<form>
+<form action="" method="POST">
     <div class="row">
         <div class="col-3">
-            <label asp-for="SearchCondition.UserNamePart" class="form-label"></label>
-            <input asp-for="SearchCondition.UserNamePart" type="text" class="form-control" />
+            <label asp-for="SearchCondition.MemberNamePart" class="form-label"></label>
+            <input asp-for="SearchCondition.MemberNamePart" type="text" class="form-control" />
         </div>
         <div class="col-3">
             <label asp-for="SearchCondition.JoinedDateFrom" class="form-label"></label>
             <input asp-for="SearchCondition.JoinedDateFrom" type="date" class="form-control" />
+        </div>
+        <div class="col-3">
+            <label asp-for="SearchCondition.JoinedDateTo" class="form-label"></label>
+            <input asp-for="SearchCondition.JoinedDateTo" type="date" class="form-control" />
         </div>
     </div>
     @Html.AntiForgeryToken()
@@ -29,11 +33,23 @@
 <div id="resultDiv" class="mt-2"></div>
 @section Scripts {
     <script>
+        const form = document.querySelector("form");
         const searchButton = document.querySelector("#searchButton");
         const resultDiv = document.querySelector("#resultDiv");
-        searchButton.addEventListener("click", () => {
-            let formData = new FormData(document.querySelector("form"));
-            fetch("?Handler=GetList", { method: "POST", body: new URLSearchParams(formData) })
+        const clearButton = document.querySelector("#clearButton");
+        searchButton.addEventListener("click", () => search());
+        clearButton.addEventListener("click", () => clearForm());
+        form.addEventListener("keydown", (e) => {
+            if (e.keyCode === 13) {
+                console.log("enter key is pressed...");
+                search();
+                e.preventDefault();
+            }
+        });
+        function search() {
+            console.log("search...");
+            let formData = new FormData(form);
+            fetch("?Handler=SearchMember", { method: "POST", body: new URLSearchParams(formData) })
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error("読み込みに失敗しました");
@@ -46,11 +62,11 @@
                 .catch((error) => {
                     resultDiv.innerHTML = "<div>" + error + "</div>";
                 });
-        });
-        const clearButton = document.querySelector("#clearButton");
-        clearButton.addEventListener("click", () => {
+        }
+        function clearForm() {
+            console.log("clearForm...");
             document.querySelector("form").reset();
             resultDiv.innerHTML = "";
-        });
+        }
     </script>
 }
