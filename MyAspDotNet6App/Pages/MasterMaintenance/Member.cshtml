@@ -41,13 +41,11 @@
         clearButton.addEventListener("click", () => clearForm());
         form.addEventListener("keydown", (e) => {
             if (e.keyCode === 13) {
-                console.log("enter key is pressed...");
                 search();
                 e.preventDefault();
             }
         });
         function search() {
-            console.log("search...");
             let formData = new FormData(form);
             fetch("?Handler=SearchMember", { method: "POST", body: new URLSearchParams(formData) })
                 .then((response) => {
@@ -64,8 +62,7 @@
                 });
         }
         function clearForm() {
-            console.log("clearForm...");
-            document.querySelector("form").reset();
+            form.reset();
             resultDiv.innerHTML = "";
         }
     </script>
