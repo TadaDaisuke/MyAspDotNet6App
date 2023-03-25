@@ -4,6 +4,8 @@ namespace MyAspDotNet6App.Domain
 {
     public class MemberSearchCondition
     {
+        public int OffsetRows { get; set; } = 0;
+
         [Display(Name = "氏名の一部")]
         public string? MemberNamePart { get; set; }
 

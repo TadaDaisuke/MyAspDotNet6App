@@ -21,7 +21,7 @@ namespace MyAspDotNet6App.SqlDataAccess
                 .AddParameter("@member_name_part", SqlDbType.NVarChar, memberSearchCondition?.MemberNamePart)
                 .AddParameter("@joined_date_from", SqlDbType.Date, memberSearchCondition?.JoinedDateFrom)
                 .AddParameter("@joined_date_to", SqlDbType.Date, memberSearchCondition?.JoinedDateTo)
-                .AddParameter("@offset_rows", SqlDbType.Int, 0)
+                .AddParameter("@offset_rows", SqlDbType.Int, memberSearchCondition?.OffsetRows)
                 .AddParameter("@fetch_rows", SqlDbType.Int, 25);
             return _context.GetRowList(cmd)
                 .Select(row =>

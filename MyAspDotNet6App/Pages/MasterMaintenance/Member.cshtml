@@ -18,6 +18,7 @@
             <input asp-for="SearchCondition.JoinedDateTo" type="date" class="form-control" />
         </div>
     </div>
+    <input asp-for="SearchCondition.OffsetRows" type="hidden" value="0" />
     @Html.AntiForgeryToken()
 </form>
 <div class="row mt-2">
@@ -30,17 +31,44 @@
         </button>
     </div>
 </div>
-<div id="resultDiv" class="mt-2"></div>
+<div class="row mt-2">
+    <div id="resultMessage" class="col"></div>
+</div>
+<table class="table">
+    <thead class="sticky-top bg-white">
+        <tr>
+            <th>Seq.</th>
+            <th>メンバーコード</th>
+            <th>氏名</th>
+            <th>カナ氏名</th>
+            <th>英字氏名</th>
+            <th>メールアドレス</th>
+            <th>着任日</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+    </tbody>
+</table>
 @section Scripts {
     <script>
         const form = document.querySelector("form");
+        const offsetRowsHidden = document.querySelector("input[name='SearchCondition.OffsetRows']");
         const searchButton = document.querySelector("#searchButton");
-        const resultDiv = document.querySelector("#resultDiv");
         const clearButton = document.querySelector("#clearButton");
-        searchButton.addEventListener("click", () => search());
+        const resultMessage = document.querySelector("#resultMessage");
+        const tableBody = document.querySelector("#tableBody");
+        searchButton.addEventListener("click", () => {
+            offsetRowsHidden.setAttribute("value", "0");
+            resultMessage.textContent = "件数: 0";
+            tableBody.innerHTML = "";
+            search();
+        });
         clearButton.addEventListener("click", () => clearForm());
         form.addEventListener("keydown", (e) => {
             if (e.keyCode === 13) {
+                offsetRowsHidden.setAttribute("value", "0");
+                resultMessage.textContent = "件数: 0";
+                tableBody.innerHTML = "";
                 search();
                 e.preventDefault();
             }
@@ -52,18 +80,38 @@
                     if (!response.ok) {
                         throw new Error("読み込みに失敗しました");
                     }
+                    if (response.headers.has("X-last-seq")) {
+                        offsetRowsHidden.setAttribute("value", response.headers.get("X-last-seq"));
+                    }
+                    let totalRecordCount = response.headers.get("X-total-records-count");
+                    if (0 < totalRecordCount) {
+                        resultMessage.textContent = `件数: ${totalRecordCount}`;
+                    }
                     return response.text();
                 })
                 .then((text) => {
-                    resultDiv.innerHTML = text;
+                    tableBody.innerHTML += text;
                 })
                 .catch((error) => {
-                    resultDiv.innerHTML = `<div>${error}</div>`;
+                    resultMessage.innerHTML = `<div>${error}</div>`;
                 });
         }
         function clearForm() {
             form.reset();
-            resultDiv.innerHTML = "";
+            offsetRowsHidden.setAttribute("value", "0");
+            resultMessage.textContent = "";
+            tableBody.innerHTML = "";
         }
+
+        let isFetchInProgress = false;
+        window.addEventListener("scroll", () => {
+            const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
+            if (!isFetchInProgress && scrollTop + clientHeight >= scrollHeight) {
+                isFetchInProgress = true;
+                search();
+                isFetchInProgress = false;
+            }
+        });
+
     </script>
 }

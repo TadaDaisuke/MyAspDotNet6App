@@ -22,7 +22,10 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
 
         public PartialViewResult OnPostSearchMember()
         {
-            return Partial("MemberList", _memberService.SearchMembers(SearchCondition));
+            var members = _memberService.SearchMembers(SearchCondition);
+            Response.Headers.Add("X-total-records-count", (members.FirstOrDefault()?.TotalRecordsCount ?? 0).ToString());
+            Response.Headers.Add("X-last-seq", members.Max(x => x?.Seq)?.ToString());
+            return Partial("MemberList", members);
         }
     }
 }

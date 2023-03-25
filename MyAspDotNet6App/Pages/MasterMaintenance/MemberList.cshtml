@@ -1,32 +1,16 @@
 ﻿@model IEnumerable<Domain.Member>
 @{
-    var totalRecordCount = Model.FirstOrDefault()?.TotalRecordsCount ?? 0;
+    //var totalRecordCount = Model.FirstOrDefault()?.TotalRecordsCount ?? 0;
 }
-<div class="row">
-    <div class="col">件数: @(totalRecordCount)</div>
-</div>
-<table class="table">
-    <thead class="sticky-top bg-white">
-        <tr>
-            <th>Seq.</th>
-            <th>メンバーコード</th>
-            <th>氏名</th>
-            <th>カナ氏名</th>
-            <th>英字氏名</th>
-            <th>メールアドレス</th>
-            <th>着任日</th>
-        </tr>
-    </thead>
-    @foreach (var member in Model)
-    {
-        <tr>
-            <th>@member.Seq</th>
-            <td>@member.MemberCode</td>
-            <td>@member.FullNameKanji</td>
-            <td>@member.FullNameKana</td>
-            <td>@member.FullName</td>
-            <td>@member.MailAddress</td>
-            <td>@member.JoinedDate</td>
-        </tr>
-    }
-</table>
+@foreach (var member in Model)
+{
+    <tr>
+        <th>@member.Seq</th>
+        <td>@member.MemberCode</td>
+        <td>@member.FullNameKanji</td>
+        <td>@member.FullNameKana</td>
+        <td>@member.FullName</td>
+        <td>@member.MailAddress</td>
+        <td>@member.JoinedDate</td>
+    </tr>
+}
