@@ -17,8 +17,9 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddRazorPages();
 
 var context = new MyAppContext(builder.Configuration.GetConnectionString("MyDatabaseConnectionString"));
-builder.Services.AddScoped<IMemberRepository>(c => new SqlMemberRepository(context));
-builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddSingleton(context);
+builder.Services.AddSingleton<IMemberRepository, SqlMemberRepository>();
+builder.Services.AddSingleton<IMemberService, MemberService>();
 
 var app = builder.Build();
 
