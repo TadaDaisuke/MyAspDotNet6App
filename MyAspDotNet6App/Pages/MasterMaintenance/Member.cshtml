@@ -34,9 +34,9 @@
 <table class="table mt-2">
     <thead class="sticky-top bg-white">
         <tr class="border-bottom-0">
-            <td id="resultMessage" colspan="7"></td>
+            <td id="resultMessage" colspan="7" class="border-bottom-0"></td>
         </tr>
-        <tr>
+        <tr id="tableHeader" class="d-none">
             <th>Seq.</th>
             <th>メンバーコード</th>
             <th>氏名</th>
@@ -56,6 +56,7 @@
         const searchButton = document.querySelector("#searchButton");
         const clearButton = document.querySelector("#clearButton");
         const resultMessage = document.querySelector("#resultMessage");
+        const tableHeader = document.querySelector("#tableHeader");
         const tableBody = document.querySelector("#tableBody");
         let isFetchInProgress = false;
         let totalRecordsCount = 0;
@@ -86,6 +87,7 @@
             offsetRowsHidden.value = "0";
             totalRecordsCount = 0;
             resultMessage.textContent = "";
+            tableHeader.classList.add("d-none");
             tableBody.innerHTML = "";
         }
         function fetchResultRows() {
@@ -99,6 +101,9 @@
                     totalRecordsCount = parseInt(response.headers.get("X-total-records-count"), 10);
                     if (offsetRowsHidden.value == 0 || 0 < totalRecordsCount) {
                         resultMessage.textContent = `件数: ${totalRecordsCount}`;
+                        if (0 < totalRecordsCount) {
+                            tableHeader.classList.remove("d-none");
+                        }
                     }
                     if (response.headers.has("X-last-seq")) {
                         offsetRowsHidden.value = response.headers.get("X-last-seq");
@@ -109,7 +114,7 @@
                     tableBody.innerHTML += text;
                 })
                 .catch((error) => {
-                    resultMessage.innerHTML = `<div>${error}</div>`;
+                    resultMessage.innerHTML = error;
                 });
             isFetchInProgress = false;
         }
