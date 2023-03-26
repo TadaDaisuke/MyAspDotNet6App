@@ -57,32 +57,48 @@
         const clearButton = document.querySelector("#clearButton");
         const resultMessage = document.querySelector("#resultMessage");
         const tableBody = document.querySelector("#tableBody");
+        let isFetchInProgress = false;
+        let totalRecordsCount = 0;
         searchButton.addEventListener("click", () => {
-            offsetRowsHidden.value = "0";
-            resultMessage.textContent = "";
-            tableBody.innerHTML = "";
-            search();
+            clearResult();
+            fetchResultRows();
         });
-        clearButton.addEventListener("click", () => clearForm());
+        clearButton.addEventListener("click", () => {
+            form.reset();
+            clearResult();
+        });
         form.addEventListener("keydown", (e) => {
             if (e.keyCode === 13) {
-                offsetRowsHidden.value = "0";
-                resultMessage.textContent = "";
-                tableBody.innerHTML = "";
-                search();
+                clearResult();
+                fetchResultRows();
                 e.preventDefault();
             }
         });
-        function search() {
+        window.addEventListener("scroll", () => {
+            const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
+            if (!isFetchInProgress
+                && scrollHeight <= scrollTop + clientHeight
+                && parseInt(offsetRowsHidden.value, 10) < totalRecordsCount) {
+                fetchResultRows();
+            }
+        });
+        function clearResult() {
+            offsetRowsHidden.value = "0";
+            totalRecordsCount = 0;
+            resultMessage.textContent = "";
+            tableBody.innerHTML = "";
+        }
+        function fetchResultRows() {
+            isFetchInProgress = true;
             let formData = new FormData(form);
             fetch("?Handler=SearchMember", { method: "POST", body: new URLSearchParams(formData) })
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error("読み込みに失敗しました");
                     }
-                    let totalRecordCount = response.headers.get("X-total-records-count");
-                    if (offsetRowsHidden.value == 0 || 0 < totalRecordCount) {
-                        resultMessage.textContent = `件数: ${totalRecordCount}`;
+                    totalRecordsCount = parseInt(response.headers.get("X-total-records-count"), 10);
+                    if (offsetRowsHidden.value == 0 || 0 < totalRecordsCount) {
+                        resultMessage.textContent = `件数: ${totalRecordsCount}`;
                     }
                     if (response.headers.has("X-last-seq")) {
                         offsetRowsHidden.value = response.headers.get("X-last-seq");
@@ -95,23 +111,7 @@
                 .catch((error) => {
                     resultMessage.innerHTML = `<div>${error}</div>`;
                 });
+            isFetchInProgress = false;
         }
-        function clearForm() {
-            form.reset();
-            offsetRowsHidden.value = "0";
-            resultMessage.textContent = "";
-            tableBody.innerHTML = "";
-        }
-
-        let isFetchInProgress = false;
-        window.addEventListener("scroll", () => {
-            const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
-            if (!isFetchInProgress && scrollTop + clientHeight >= scrollHeight) {
-                isFetchInProgress = true;
-                search();
-                isFetchInProgress = false;
-            }
-        });
-
     </script>
 }
