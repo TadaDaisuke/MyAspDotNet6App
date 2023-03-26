@@ -22,7 +22,7 @@ namespace MyAspDotNet6App.SqlDataAccess
                 .AddParameter("@joined_date_from", SqlDbType.Date, memberSearchCondition?.JoinedDateFrom)
                 .AddParameter("@joined_date_to", SqlDbType.Date, memberSearchCondition?.JoinedDateTo)
                 .AddParameter("@offset_rows", SqlDbType.Int, memberSearchCondition?.OffsetRows)
-                .AddParameter("@fetch_rows", SqlDbType.Int, 25);
+                .AddParameter("@fetch_rows", SqlDbType.Int, _context.FETCH_ROW_SIZE);
             return _context.GetRowList(cmd)
                 .Select(row =>
                     new Member(

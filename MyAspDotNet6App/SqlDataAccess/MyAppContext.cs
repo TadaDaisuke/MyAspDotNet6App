@@ -8,6 +8,8 @@ namespace MyAspDotNet6App.SqlDataAccess
     {
         private string _connectionString { get; set; }
 
+        public readonly int FETCH_ROW_SIZE = 50;
+
         public MyAppContext(string connectionString)
         {
             _connectionString = connectionString;

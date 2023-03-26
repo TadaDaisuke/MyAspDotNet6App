@@ -25,4 +25,19 @@ body {
 .table {
     border-collapse: separate;
     border-spacing: 0;
+    font-size: smaller;
+}
+
+.btn-to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 6px;
+    margin: 2rem auto;
+    width: 52px;
+    height: 52px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 6px;
+    font-size: 1.5rem;
+    cursor: pointer;
 }

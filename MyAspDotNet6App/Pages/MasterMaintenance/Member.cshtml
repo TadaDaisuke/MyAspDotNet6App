@@ -49,6 +49,7 @@
     <tbody id="tableBody">
     </tbody>
 </table>
+<div id="scrollToTopButton" class="btn btn-primary btn-to-top d-none"><i class="bi bi-caret-up-fill"></i></div>
 @section Scripts {
     <script>
         const form = document.querySelector("form");
@@ -58,6 +59,7 @@
         const resultMessage = document.querySelector("#resultMessage");
         const tableHeader = document.querySelector("#tableHeader");
         const tableBody = document.querySelector("#tableBody");
+        const scrollToTopButton = document.querySelector("#scrollToTopButton");
         let isFetchInProgress = false;
         let totalRecordsCount = 0;
         searchButton.addEventListener("click", () => {
@@ -68,6 +70,7 @@
             form.reset();
             clearResult();
         });
+        scrollToTopButton.addEventListener("click", () => window.scroll({ top: 0, behavior: "smooth" }));
         form.addEventListener("keydown", (e) => {
             if (e.keyCode === 13) {
                 clearResult();
@@ -81,6 +84,11 @@
                 && scrollHeight <= scrollTop + clientHeight
                 && parseInt(offsetRowsHidden.value, 10) < totalRecordsCount) {
                 fetchResultRows();
+            }
+            if (140 < scrollTop){
+                scrollToTopButton.classList.remove("d-none");
+            } else {
+                scrollToTopButton.classList.add("d-none");
             }
         });
         function clearResult() {
