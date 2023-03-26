@@ -31,11 +31,11 @@
         </button>
     </div>
 </div>
-<div class="row mt-2">
-    <div id="resultMessage" class="col"></div>
-</div>
-<table class="table">
+<table class="table mt-2">
     <thead class="sticky-top bg-white">
+        <tr class="border-bottom-0">
+            <td id="resultMessage" colspan="7"></td>
+        </tr>
         <tr>
             <th>Seq.</th>
             <th>メンバーコード</th>
@@ -58,16 +58,16 @@
         const resultMessage = document.querySelector("#resultMessage");
         const tableBody = document.querySelector("#tableBody");
         searchButton.addEventListener("click", () => {
-            offsetRowsHidden.setAttribute("value", "0");
-            resultMessage.textContent = "件数: 0";
+            offsetRowsHidden.value = "0";
+            resultMessage.textContent = "";
             tableBody.innerHTML = "";
             search();
         });
         clearButton.addEventListener("click", () => clearForm());
         form.addEventListener("keydown", (e) => {
             if (e.keyCode === 13) {
-                offsetRowsHidden.setAttribute("value", "0");
-                resultMessage.textContent = "件数: 0";
+                offsetRowsHidden.value = "0";
+                resultMessage.textContent = "";
                 tableBody.innerHTML = "";
                 search();
                 e.preventDefault();
@@ -80,12 +80,12 @@
                     if (!response.ok) {
                         throw new Error("読み込みに失敗しました");
                     }
-                    if (response.headers.has("X-last-seq")) {
-                        offsetRowsHidden.setAttribute("value", response.headers.get("X-last-seq"));
-                    }
                     let totalRecordCount = response.headers.get("X-total-records-count");
-                    if (0 < totalRecordCount) {
+                    if (offsetRowsHidden.value == 0 || 0 < totalRecordCount) {
                         resultMessage.textContent = `件数: ${totalRecordCount}`;
+                    }
+                    if (response.headers.has("X-last-seq")) {
+                        offsetRowsHidden.value = response.headers.get("X-last-seq");
                     }
                     return response.text();
                 })
@@ -98,7 +98,7 @@
         }
         function clearForm() {
             form.reset();
-            offsetRowsHidden.setAttribute("value", "0");
+            offsetRowsHidden.value = "0";
             resultMessage.textContent = "";
             tableBody.innerHTML = "";
         }
