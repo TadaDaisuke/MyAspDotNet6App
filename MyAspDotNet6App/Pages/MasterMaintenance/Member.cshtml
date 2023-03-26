@@ -49,6 +49,11 @@
     <tbody id="tableBody">
     </tbody>
 </table>
+<div id="spinner" class="text-center d-none">
+    <div class="spinner-border text-secondary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 <div id="scrollToTopButton" class="btn btn-primary btn-to-top d-none"><i class="bi bi-caret-up-fill"></i></div>
 @section Scripts {
     <script>
@@ -59,6 +64,7 @@
         const resultMessage = document.querySelector("#resultMessage");
         const tableHeader = document.querySelector("#tableHeader");
         const tableBody = document.querySelector("#tableBody");
+        const spinner = document.querySelector("#spinner");
         const scrollToTopButton = document.querySelector("#scrollToTopButton");
         let isFetchInProgress = false;
         let totalRecordsCount = 0;
@@ -85,7 +91,7 @@
                 && parseInt(offsetRowsHidden.value, 10) < totalRecordsCount) {
                 fetchResultRows();
             }
-            if (140 < scrollTop){
+            if (140 < scrollTop) {
                 scrollToTopButton.classList.remove("d-none");
             } else {
                 scrollToTopButton.classList.add("d-none");
@@ -100,6 +106,7 @@
         }
         function fetchResultRows() {
             isFetchInProgress = true;
+            spinner.classList.remove("d-none");
             let formData = new FormData(form);
             fetch("?Handler=SearchMember", { method: "POST", body: new URLSearchParams(formData) })
                 .then((response) => {
@@ -123,8 +130,11 @@
                 })
                 .catch((error) => {
                     resultMessage.innerHTML = error;
+                })
+                .finally(() => {
+                    spinner.classList.add("d-none");
+                    isFetchInProgress = false;
                 });
-            isFetchInProgress = false;
         }
     </script>
 }
