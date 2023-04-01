@@ -4,7 +4,7 @@
     ViewData["Title"] = "メンバーマスター";
     ViewData["BreadCrumbs"] = new List<Tuple<string, string>> { Tuple.Create("/Index", "Home") };
 }
-<form id="searchConditionForm" action="" method="POST">
+<form id="searchConditionForm">
     <div class="row">
         <div class="col-3">
             <label asp-for="SearchCondition.MemberNamePart" class="form-label"></label>
@@ -183,26 +183,25 @@
         });
         // モーダルの保存ボタンクリックイベント
         saveMemberButton.addEventListener("click", () => {
-            modalBodyContent.classList.add("d-none");
-            modalBodyLoading.classList.remove("d-none");
+            memberDetailModal.hide();
             let formData = new FormData(document.querySelector("#memberDetailForm"));
             formData.append("__RequestVerificationToken", token);
             fetch("?Handler=SaveMember", { method: "POST", body: formData })
                 .then((response) => {
                     if (!response.ok) {
-                        throw new Error("読み込みに失敗しました");
+                        throw new Error("保存に失敗しました");
                     }
                     return response.text();
                 })
                 .then((text) => {
-                    memberDetailModal.hide();
+                    modalBodyContent.classList.add("d-none");
+                    modalBodyLoading.classList.remove("d-none");
                     alert(text);
                     search();
                 })
                 .catch((error) => {
-                    modalBodyLoading.classList.add("d-none");
-                    modalBodyContent.classList.remove("d-none");
-                    alert(text);
+                    alert(error);
+                    memberDetailModal.show();
                 });
         });
         // モーダルの閉じるボタンクリックイベント
