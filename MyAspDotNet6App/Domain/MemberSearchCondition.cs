@@ -6,6 +6,10 @@ namespace MyAspDotNet6App.Domain
     {
         public int OffsetRows { get; set; } = 0;
 
+        public string? SortItem { get; set; }
+
+        public string? SortType { get; set; }
+
         [Display(Name = "氏名の一部")]
         public string? MemberNamePart { get; set; }
 

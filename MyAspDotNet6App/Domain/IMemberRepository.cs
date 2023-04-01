@@ -2,6 +2,10 @@
 {
     public interface IMemberRepository
     {
-        public IEnumerable<Member> SearchMembers(MemberSearchCondition? condition);
+        public IEnumerable<MemberListRow> SearchMembers(MemberSearchCondition? condition);
+
+        public Member? GetMember(string memberCode);
+
+        public void SaveMember(Member member);
     }
 }

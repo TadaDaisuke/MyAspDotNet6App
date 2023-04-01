@@ -1,4 +1,4 @@
-﻿namespace MyAspDotNet6App.SqlDataAccess.Common
+﻿namespace MyAspDotNet6App.Common
 {
     public static class Constants
     {

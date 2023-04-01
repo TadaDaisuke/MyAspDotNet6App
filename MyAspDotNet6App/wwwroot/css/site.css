@@ -25,7 +25,22 @@ body {
 .table {
     border-collapse: separate;
     border-spacing: 0;
-    font-size: smaller;
+}
+
+    .table tbody tr {
+        font-size: smaller;
+    }
+
+    .table tbody tr:hover {
+        cursor: pointer;
+    }
+
+.btn-sort {
+    font-size: 0.8rem;
+    padding: 0.2em 0.5em;
+    border: none;
+    color: #fff;
+    background-color: var(--bs-blue);
 }
 
 .btn-to-top {
@@ -45,4 +60,13 @@ body {
 .spinner-border {
     width: 3rem;
     height: 3rem;
+}
+
+form .form-label {
+    font-size: 0.75rem;
+    margin-bottom: 0;
+}
+
+.form-control-plaintext:focus {
+    outline: none;
 }

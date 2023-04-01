@@ -16,6 +16,12 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
         [BindProperty]
         public MemberSearchCondition? SearchCondition { get; set; }
 
+        [BindProperty]
+        public string MemberCode { get; set; } = string.Empty;
+
+        [BindProperty]
+        public Member? MemberToSave { get; set; }
+
         public void OnGet()
         {
         }
@@ -26,6 +32,21 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
             Response.Headers.Add("X-total-records-count", (members.FirstOrDefault()?.TotalRecordsCount ?? 0).ToString());
             Response.Headers.Add("X-last-seq", members.Max(x => x?.Seq)?.ToString());
             return Partial("MemberList", members);
+        }
+
+        public PartialViewResult OnPostGetMemberDetail()
+        {
+            return Partial("MemberDetail", _memberService.GetMember(MemberCode));
+        }
+
+        public ContentResult OnPostSaveMemberDetail()
+        {
+            if (MemberToSave == null)
+            {
+                throw new ArgumentException(nameof(MemberToSave));
+            }
+            _memberService.SaveMember(MemberToSave);
+            return Content("çXêVÇµÇ‹ÇµÇΩ");
         }
     }
 }

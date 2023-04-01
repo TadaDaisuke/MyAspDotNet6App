@@ -1,0 +1,46 @@
+﻿@using static MyAspDotNet6App.Common.Constants
+@model Domain.Member
+<form id="memberDetailForm">
+    <div class="row">
+        <div class="col-3">
+            <label asp-for="MemberCode" class="form-label"></label>
+            <input asp-for="MemberCode" type="text" class="form-control-plaintext" value="@Model.MemberCode" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <label asp-for="GivenNameKanji" class="form-label"></label>
+            <input asp-for="GivenNameKanji" type="text" class="form-control" value="@Model.GivenNameKanji" />
+        </div>
+        <div class="col-3">
+            <label asp-for="FamilyNameKanji" class="form-label"></label>
+            <input asp-for="FamilyNameKanji" type="text" class="form-control" value="@Model.FamilyNameKanji" />
+        </div>
+        <div class="col-3">
+            <label asp-for="GivenNameKana" class="form-label"></label>
+            <input asp-for="GivenNameKana" type="text" class="form-control" value="@Model.GivenNameKana" />
+        </div>
+        <div class="col-3">
+            <label asp-for="FamilyNameKana" class="form-label"></label>
+            <input asp-for="FamilyNameKana" type="text" class="form-control" value="@Model.FamilyNameKana" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <label asp-for="GivenName" class="form-label"></label>
+            <input asp-for="GivenName" type="text" class="form-control" value="@Model.GivenName" />
+        </div>
+        <div class="col-3">
+            <label asp-for="FamilyName" class="form-label"></label>
+            <input asp-for="FamilyName" type="text" class="form-control" value="@Model.FamilyName" />
+        </div>
+        <div class="col-3">
+            <label asp-for="MailAddress" class="form-label"></label>
+            <input asp-for="MailAddress" type="email" class="form-control" value="@Model.MailAddress" />
+        </div>
+        <div class="col-3">
+            <label asp-for="JoinedDate" class="form-label"></label>
+            <input asp-for="JoinedDate" type="date" class="form-control" value="@Model.JoinedDate?.ToString(DEFAULT_DATEONLY_FORMAT)" />
+        </div>
+    </div>
+</form>

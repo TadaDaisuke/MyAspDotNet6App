@@ -4,14 +4,12 @@
     {
         private readonly IMemberRepository _memberRepository;
 
-        public MemberService(IMemberRepository memberRepository)
-        {
-            _memberRepository = memberRepository;
-        }
+        public MemberService(IMemberRepository memberRepository) => _memberRepository = memberRepository;
 
-        public IEnumerable<Member> SearchMembers(MemberSearchCondition? condition)
-        {
-            return _memberRepository.SearchMembers(condition);
-        }
+        public IEnumerable<MemberListRow> SearchMembers(MemberSearchCondition? condition) => _memberRepository.SearchMembers(condition);
+
+        public Member? GetMember(string memberCode) => _memberRepository.GetMember(memberCode);
+
+        public void SaveMember(Member member) => _memberRepository.SaveMember(member);
     }
 }

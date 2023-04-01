@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
-using static MyAspDotNet6App.SqlDataAccess.Common.Constants;
+using static MyAspDotNet6App.Common.Constants;
 
 namespace MyAspDotNet6App.SqlDataAccess
 {
@@ -51,6 +51,17 @@ namespace MyAspDotNet6App.SqlDataAccess
                 }
             }
             return list;
+        }
+
+        public SqlCommand ExecuteSql(SqlCommand cmd)
+        {
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                cmd.Connection = conn;
+                cmd.ExecuteNonQuery();
+            }
+            return cmd;
         }
     }
 }

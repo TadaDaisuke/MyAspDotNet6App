@@ -2,8 +2,9 @@
 @model MyAspDotNet6App.Pages.MasterMaintenance.MemberModel
 @{
     ViewData["Title"] = "メンバーマスター";
+    ViewData["BreadCrumbs"] = new List<Tuple<string, string>> { Tuple.Create("/Index", "Home") };
 }
-<form action="" method="POST">
+<form id="searchConditionForm" action="" method="POST">
     <div class="row">
         <div class="col-3">
             <label asp-for="SearchCondition.MemberNamePart" class="form-label"></label>
@@ -19,6 +20,8 @@
         </div>
     </div>
     <input asp-for="SearchCondition.OffsetRows" type="hidden" value="0" />
+    <input asp-for="SearchCondition.SortItem" type="hidden" />
+    <input asp-for="SearchCondition.SortType" type="hidden" />
     @Html.AntiForgeryToken()
 </form>
 <div class="row mt-2">
@@ -31,84 +34,209 @@
         </button>
     </div>
 </div>
-<table class="table mt-2">
+<table class="table table-hover mt-2">
     <thead class="sticky-top bg-white">
         <tr class="border-bottom-0">
             <td id="resultMessage" colspan="7" class="border-bottom-0"></td>
         </tr>
-        <tr id="tableHeader" class="d-none">
+        <tr id="tableHeader" class="d-none align-baseline">
             <th>Seq.</th>
-            <th>メンバーコード</th>
+            <th>メンバーコード <button class="btn btn-sort" data-sort-item="member_code"><i class="bi bi-arrow-down-up"></i></button></th>
             <th>氏名</th>
             <th>カナ氏名</th>
             <th>英字氏名</th>
             <th>メールアドレス</th>
-            <th>着任日</th>
+            <th>着任日 <button class="btn btn-sort" data-sort-item="joined_date"><i class="bi bi-arrow-down-up"></i></button></th>
         </tr>
     </thead>
     <tbody id="tableBody">
     </tbody>
 </table>
-<div id="spinner" class="text-center d-none">
+<div id="tableLoading" class="text-center d-none">
     <div class="spinner-border text-secondary" role="status">
         <span class="visually-hidden">Loading...</span>
     </div>
 </div>
+
 <div id="scrollToTopButton" class="btn btn-primary btn-to-top d-none"><i class="bi bi-caret-up-fill"></i></div>
+
+<div class="modal fade" id="memberDetailModal" role="dialog" aria-labelledby="memberDetailModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="memberDetailModalLabel">メンバー詳細</h5>
+            </div>
+            <div class="modal-body">
+                <div id="modalBodyLoading" class="text-center">
+                    <div class="spinner-border text-secondary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="modalBodyContent">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModalButton" type="button" class="btn btn-primary"><i class="bi bi-x-lg"></i> 閉じる</button>
+                <button id="saveMemberButton" type="button" class="btn btn-primary"><i class="bi bi-save"></i> 保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        const form = document.querySelector("form");
+        const form = document.querySelector("#searchConditionForm");
         const offsetRowsHidden = document.querySelector("input[name='SearchCondition.OffsetRows']");
+        const sortItemHidden = document.querySelector("input[name='SearchCondition.SortItem']");
+        const sortTypeHidden = document.querySelector("input[name='SearchCondition.SortType']");
         const searchButton = document.querySelector("#searchButton");
         const clearButton = document.querySelector("#clearButton");
+        const table = document.querySelector("table");
         const resultMessage = document.querySelector("#resultMessage");
         const tableHeader = document.querySelector("#tableHeader");
+        const sortButtons = document.querySelectorAll(".btn-sort");
         const tableBody = document.querySelector("#tableBody");
-        const spinner = document.querySelector("#spinner");
+        const tableLoading = document.querySelector("#tableLoading");
         const scrollToTopButton = document.querySelector("#scrollToTopButton");
+        const memberDetailModal = new bootstrap.Modal(document.querySelector("#memberDetailModal"));
+        const modalBodyLoading = document.querySelector("#modalBodyLoading");
+        const modalBodyContent = document.querySelector("#modalBodyContent");
+        const saveMemberButton = document.querySelector("#saveMemberButton");
+        const closeModalButton = document.querySelector("#closeModalButton");
+        const token = document.querySelector("[name='__RequestVerificationToken']").value;
         let isFetchInProgress = false;
         let totalRecordsCount = 0;
-        searchButton.addEventListener("click", () => {
-            clearResult();
-            fetchResultRows();
-        });
-        clearButton.addEventListener("click", () => {
-            form.reset();
-            clearResult();
-        });
-        scrollToTopButton.addEventListener("click", () => window.scroll({ top: 0, behavior: "smooth" }));
+        let searchParams;
+        // 検索ボタンクリックイベント
+        searchButton.addEventListener("click", () => search());
+        // Enterキー押下イベント
         form.addEventListener("keydown", (e) => {
             if (e.keyCode === 13) {
-                clearResult();
-                fetchResultRows();
+                search();
                 e.preventDefault();
             }
         });
+        // クリアボタンクリックイベント
+        clearButton.addEventListener("click", () => {
+            form.reset();
+            sortItemHidden.value = "";
+            sortTypeHidden.value = "";
+            clearResult();
+        });
+        // 各列のソートボタンクリックイベント
+        sortButtons.forEach((button) => {
+            button.addEventListener("click", (e) => {
+                let sortItem = e.currentTarget.getAttribute("data-sort-item");
+                sortTypeHidden.value = sortItemHidden.value == sortItem && sortTypeHidden.value == "asc" ? "desc" : "asc";
+                sortItemHidden.value = sortItem;
+                search();
+            });
+        });
+        // トップへ戻るボタンクリックイベント
+        scrollToTopButton.addEventListener("click", () => window.scroll({ top: 0, behavior: "smooth" }));
+        // スクロールイベント
         window.addEventListener("scroll", () => {
             const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
+            // 次の検索結果行をフェッチ
             if (!isFetchInProgress
                 && scrollHeight <= scrollTop + clientHeight
                 && parseInt(offsetRowsHidden.value, 10) < totalRecordsCount) {
                 fetchResultRows();
             }
+            // トップへ戻るボタンの表示制御
             if (140 < scrollTop) {
                 scrollToTopButton.classList.remove("d-none");
             } else {
                 scrollToTopButton.classList.add("d-none");
             }
         });
+        // 検索結果各行のクリックイベント
+        table.addEventListener("click", (e) => {
+            let memberCode = e.target.closest("tr").getAttribute("data-member-code");
+            if (memberCode) {
+                modalBodyContent.classList.add("d-none");
+                modalBodyLoading.classList.remove("d-none");
+                // メンバー詳細の読み込み
+                let formData = new FormData();
+                formData.append("MemberCode", memberCode);
+                formData.append("__RequestVerificationToken", token);
+                fetch("?Handler=GetMemberDetail", { method: "POST", body: formData })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("読み込みに失敗しました");
+                        }
+                        return response.text();
+                    })
+                    .then((text) => {
+                        modalBodyContent.innerHTML = text;
+                    })
+                    .catch((error) => {
+                        modalBodyContent.innerHTML = `<div>${error}</div>`;
+                    })
+                    .finally(() => {
+                        modalBodyLoading.classList.add("d-none");
+                        modalBodyContent.classList.remove("d-none");
+                    });
+                // モーダルの表示
+                memberDetailModal.show();
+            }
+        });
+        // モーダルの保存ボタンクリックイベント
+        saveMemberButton.addEventListener("click", () => {
+            modalBodyContent.classList.add("d-none");
+            modalBodyLoading.classList.remove("d-none");
+            let formData = new FormData(document.querySelector("#memberDetailForm"));
+            formData.append("__RequestVerificationToken", token);
+            fetch("?Handler=SaveMemberDetail", { method: "POST", body: formData })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("読み込みに失敗しました");
+                    }
+                    return response.text();
+                })
+                .then((text) => {
+                    memberDetailModal.hide();
+                    alert(text);
+                    search();
+                })
+                .catch((error) => {
+                    modalBodyLoading.classList.add("d-none");
+                    modalBodyContent.classList.remove("d-none");
+                    alert(text);
+                });
+        });
+        // モーダルの閉じるボタンクリックイベント
+        closeModalButton.addEventListener("click", () => memberDetailModal.hide());
+        // 検索結果のクリア
         function clearResult() {
+            searchParams = null;
             offsetRowsHidden.value = "0";
             totalRecordsCount = 0;
             resultMessage.textContent = "";
             tableHeader.classList.add("d-none");
             tableBody.innerHTML = "";
+            sortButtons.forEach((button) => {
+                if (sortItemHidden.value == button.getAttribute("data-sort-item")) {
+                    button.innerHTML = sortTypeHidden.value == "asc"
+                        ? "<i class='bi bi-sort-alpha-down'></i>"
+                        : "<i class='bi bi-sort-alpha-down-alt'></i>";
+                } else {
+                    button.innerHTML = "<i class='bi bi-arrow-down-up'></i>";
+                }
+            });
         }
+        // 検索開始
+        function search() {
+            clearResult();
+            searchParams = new URLSearchParams(new FormData(form));
+            fetchResultRows();
+        }
+        // 検索実行と結果行のフェッチ
         function fetchResultRows() {
             isFetchInProgress = true;
-            spinner.classList.remove("d-none");
-            let formData = new FormData(form);
-            fetch("?Handler=SearchMember", { method: "POST", body: new URLSearchParams(formData) })
+            tableLoading.classList.remove("d-none");
+            searchParams.set("SearchCondition.OffsetRows", offsetRowsHidden.value);
+            fetch("?Handler=SearchMember", { method: "POST", body: searchParams })
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error("読み込みに失敗しました");
@@ -132,7 +260,7 @@
                     resultMessage.innerHTML = error;
                 })
                 .finally(() => {
-                    spinner.classList.add("d-none");
+                    tableLoading.classList.add("d-none");
                     isFetchInProgress = false;
                 });
         }
