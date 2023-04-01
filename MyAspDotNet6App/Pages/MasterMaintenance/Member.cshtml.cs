@@ -39,7 +39,7 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
             return Partial("MemberDetail", _memberService.GetMember(MemberCode));
         }
 
-        public ContentResult OnPostSaveMemberDetail()
+        public ContentResult OnPostSaveMember()
         {
             if (MemberToSave == null)
             {

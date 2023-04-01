@@ -187,7 +187,7 @@
             modalBodyLoading.classList.remove("d-none");
             let formData = new FormData(document.querySelector("#memberDetailForm"));
             formData.append("__RequestVerificationToken", token);
-            fetch("?Handler=SaveMemberDetail", { method: "POST", body: formData })
+            fetch("?Handler=SaveMember", { method: "POST", body: formData })
                 .then((response) => {
                     if (!response.ok) {
                         throw new Error("読み込みに失敗しました");
