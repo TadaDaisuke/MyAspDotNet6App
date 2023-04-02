@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authentication.Negotiate;
+﻿using Microsoft.AspNetCore.Authentication.Negotiate;
 using MyAspDotNet6App.Domain;
 using MyAspDotNet6App.SqlDataAccess;
 

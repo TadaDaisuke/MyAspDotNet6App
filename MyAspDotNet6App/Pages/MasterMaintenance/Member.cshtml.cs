@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+Ôªøusing Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MyAspDotNet6App.Domain;
 
@@ -46,7 +46,7 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
                 throw new ArgumentException(nameof(MemberToSave));
             }
             _memberService.SaveMember(MemberToSave);
-            return Content("çXêVÇµÇ‹ÇµÇΩ");
+            return Content("Êõ¥Êñ∞„Åó„Åæ„Åó„Åü");
         }
     }
 }
