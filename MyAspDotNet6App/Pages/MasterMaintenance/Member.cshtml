@@ -84,6 +84,7 @@
 </div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script>
         const form = document.querySelector("#searchConditionForm");
         const offsetRowsHidden = document.querySelector("input[name='SearchCondition.OffsetRows']");
@@ -169,6 +170,9 @@
                     })
                     .then((text) => {
                         modalBodyContent.innerHTML = text;
+                        let newForm = document.querySelector("#memberDetailForm");
+                        $(newForm).removeData("validator").removeData("unobtrusiveValidation");
+                        $.validator.unobtrusive.parse(newForm);
                     })
                     .catch((error) => {
                         modalBodyContent.innerHTML = `<div>${error}</div>`;
@@ -253,7 +257,7 @@
                     return response.text();
                 })
                 .then((text) => {
-                    tableBody.innerHTML += text;
+                    tableBody.insertAdjacentHTML("beforeend", text);
                 })
                 .catch((error) => {
                     resultMessage.innerHTML = error;

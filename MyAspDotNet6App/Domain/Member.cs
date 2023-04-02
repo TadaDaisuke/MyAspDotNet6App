@@ -5,30 +5,40 @@ namespace MyAspDotNet6App.Domain
     public class Member
     {
         [Display(Name = "メンバーコード")]
+        [Required]
         public string? MemberCode { get; set; }
 
         [Display(Name = "英字名")]
+        [Required(ErrorMessage = "英字名は入力必須です")]
         public string? GivenName { get; set; }
 
         [Display(Name = "英字姓")]
+        [Required(ErrorMessage = "英字姓は入力必須です")]
         public string? FamilyName { get; set; }
 
         [Display(Name = "漢字名")]
+        [Required(ErrorMessage = "漢字名は入力必須です")]
         public string? GivenNameKanji { get; set; }
 
         [Display(Name = "漢字姓")]
+        [Required(ErrorMessage = "漢字姓は入力必須です")]
         public string? FamilyNameKanji { get; set; }
 
         [Display(Name = "カナ名")]
+        [Required(ErrorMessage = "カナ名は入力必須です")]
         public string? GivenNameKana { get; set; }
 
         [Display(Name = "カナ姓")]
+        [Required(ErrorMessage = "カナ姓は入力必須です")]
         public string? FamilyNameKana { get; set; }
 
         [Display(Name = "メールアドレス")]
+        [Required(ErrorMessage = "メールアドレスは入力必須です")]
+        [EmailAddress(ErrorMessage = "正しいメールアドレスを入力してください")]
         public string? MailAddress { get; set; }
 
         [Display(Name = "着任日")]
+        [Required(ErrorMessage = "着任日は入力必須です")]
         public DateTime? JoinedDate { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
 
         public string FullName => $"{GivenName} {FamilyName}";

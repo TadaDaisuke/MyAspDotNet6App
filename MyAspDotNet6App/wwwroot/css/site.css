@@ -70,3 +70,8 @@ form .form-label {
 .form-control-plaintext:focus {
     outline: none;
 }
+
+.field-validation-error {
+    font-size: 0.75rem;
+    color: var(--bs-danger);
+}

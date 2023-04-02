@@ -28,16 +28,24 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
             return Partial("MemberList", members);
         }
 
-        public PartialViewResult OnPostGetMemberDetail([FromForm] string memberCode)
+        public PartialViewResult OnPostGetMemberDetail([FromForm] string? memberCode)
         {
+            if (memberCode == null)
+            {
+                throw new ArgumentNullException(nameof(memberCode));
+            }
             return Partial("MemberDetail", _memberService.GetMember(memberCode));
         }
 
-        public ContentResult OnPostSaveMember([FromForm]Member? memberToSave)
+        public ContentResult OnPostSaveMember([FromForm] Member? memberToSave)
         {
             if (memberToSave == null)
             {
                 throw new ArgumentException(nameof(memberToSave));
+            }
+            if (!ModelState.IsValid)
+            {
+                throw new InvalidDataException(nameof(memberToSave));
             }
             _memberService.SaveMember(memberToSave);
             return Content("更新しました");
