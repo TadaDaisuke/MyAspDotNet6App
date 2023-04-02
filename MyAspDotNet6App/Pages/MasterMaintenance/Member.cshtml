@@ -77,7 +77,7 @@
             </div>
             <div class="modal-footer">
                 <button id="closeModalButton" type="button" class="btn btn-primary"><i class="bi bi-x-lg"></i> 閉じる</button>
-                <button id="saveMemberButton" type="button" class="btn btn-primary"><i class="bi bi-save"></i> 保存</button>
+                <button id="saveMemberButton" type="button" class="btn btn-primary"><i class="bi bi-save" disabled></i> 保存</button>
             </div>
         </div>
     </div>
@@ -171,8 +171,18 @@
                     .then((text) => {
                         modalBodyContent.innerHTML = text;
                         let newForm = document.querySelector("#memberDetailForm");
-                        $(newForm).removeData("validator").removeData("unobtrusiveValidation");
-                        $.validator.unobtrusive.parse(newForm);
+                        $(newForm).removeData("validator");
+                        $(newForm).removeData("unobtrusiveValidation");
+                        $.validator.unobtrusive.parse($(newForm));
+                        newForm.querySelectorAll("input").forEach((inputElem) => {
+                            inputElem.addEventListener("blur", () => {
+                                if ($(newForm).valid()) {
+                                    saveMemberButton.removeAttribute("disabled");
+                                } else {
+                                    saveMemberButton.setAttribute("disabled", "disabled");
+                                }
+                            });
+                        });
                     })
                     .catch((error) => {
                         modalBodyContent.innerHTML = `<div>${error}</div>`;
