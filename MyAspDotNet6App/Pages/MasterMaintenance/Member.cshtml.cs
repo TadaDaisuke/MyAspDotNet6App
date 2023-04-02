@@ -14,13 +14,7 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
         }
 
         [BindProperty]
-        public MemberSearchCondition? SearchCondition { get; set; }
-
-        [BindProperty]
-        public string MemberCode { get; set; } = string.Empty;
-
-        [BindProperty]
-        public Member? MemberToSave { get; set; }
+        public MemberSearchCondition SearchCondition { get; set; } = new MemberSearchCondition();
 
         public void OnGet()
         {
@@ -34,18 +28,18 @@ namespace MyAspDotNet6App.Pages.MasterMaintenance
             return Partial("MemberList", members);
         }
 
-        public PartialViewResult OnPostGetMemberDetail()
+        public PartialViewResult OnPostGetMemberDetail([FromForm] string memberCode)
         {
-            return Partial("MemberDetail", _memberService.GetMember(MemberCode));
+            return Partial("MemberDetail", _memberService.GetMember(memberCode));
         }
 
-        public ContentResult OnPostSaveMember()
+        public ContentResult OnPostSaveMember([FromForm]Member? memberToSave)
         {
-            if (MemberToSave == null)
+            if (memberToSave == null)
             {
-                throw new ArgumentException(nameof(MemberToSave));
+                throw new ArgumentException(nameof(memberToSave));
             }
-            _memberService.SaveMember(MemberToSave);
+            _memberService.SaveMember(memberToSave);
             return Content("更新しました");
         }
     }
