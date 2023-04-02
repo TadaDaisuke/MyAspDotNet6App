@@ -174,15 +174,8 @@
                         $(newForm).removeData("validator");
                         $(newForm).removeData("unobtrusiveValidation");
                         $.validator.unobtrusive.parse($(newForm));
-                        newForm.querySelectorAll("input").forEach((inputElem) => {
-                            inputElem.addEventListener("blur", () => {
-                                if ($(newForm).valid()) {
-                                    saveMemberButton.removeAttribute("disabled");
-                                } else {
-                                    saveMemberButton.setAttribute("disabled", "disabled");
-                                }
-                            });
-                        });
+                        enableSaveButton(newForm);
+                        newForm.querySelectorAll("input").forEach((inputElem) => inputElem.addEventListener("input", () => enableSaveButton(newForm)));
                     })
                     .catch((error) => {
                         modalBodyContent.innerHTML = `<div>${error}</div>`;
@@ -195,6 +188,22 @@
                 memberDetailModal.show();
             }
         });
+        // 保存ボタンの活性制御
+        function enableSaveButton(newFormElem) {
+            let canSave = false;
+            if ($(newFormElem).valid()) {
+                newFormElem.querySelectorAll("input[data-original-value]").forEach((inputElem) => {
+                    if (inputElem.value != inputElem.getAttribute("data-original-value")) {
+                        canSave = true;
+                    }
+                });
+            }
+            if (canSave) {
+                saveMemberButton.removeAttribute("disabled");
+            } else {
+                saveMemberButton.setAttribute("disabled", "disabled");
+            }
+        }
         // モーダルの保存ボタンクリックイベント
         saveMemberButton.addEventListener("click", () => {
             memberDetailModal.hide();
