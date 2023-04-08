@@ -10,10 +10,12 @@ namespace MyAspDotNet6App.Domain
 
         [Display(Name = "英字名")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "英字名は入力必須です")]
+        [RegularExpression("^[A-Za-z]+$", ErrorMessage = "半角英字で入力してください")]
         public string? GivenName { get; set; }
 
         [Display(Name = "英字姓")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "英字姓は入力必須です")]
+        [RegularExpression("^[A-Za-z]+$", ErrorMessage = "半角英字で入力してください")]
         public string? FamilyName { get; set; }
 
         [Display(Name = "漢字名")]
@@ -26,10 +28,12 @@ namespace MyAspDotNet6App.Domain
 
         [Display(Name = "カナ名")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "カナ名は入力必須です")]
+        [RegularExpression("^[ァ-ヴー]+$", ErrorMessage = "全角カタカナで入力してください")]
         public string? GivenNameKana { get; set; }
 
         [Display(Name = "カナ姓")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "カナ姓は入力必須です")]
+        [RegularExpression("^[ァ-ヴー]+$", ErrorMessage = "全角カタカナで入力してください")]
         public string? FamilyNameKana { get; set; }
 
         [Display(Name = "メールアドレス")]
