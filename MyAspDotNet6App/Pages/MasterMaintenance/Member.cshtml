@@ -3,6 +3,17 @@
 @{
     ViewData["Title"] = "メンバーマスター";
     ViewData["BreadCrumbs"] = new List<Tuple<string, string>> { Tuple.Create("/Index", "Home") };
+    ViewData["ListColumns"] = new List<Tuple<string, string?>>
+    {
+        Tuple.Create<string, string?>("Seq.", null),
+        Tuple.Create<string, string?>("メンバーコード", "member_code"),
+        Tuple.Create<string, string?>("氏名", null),
+        Tuple.Create<string, string?>("カナ氏名", null),
+        Tuple.Create<string, string?>("英字氏名", null),
+        Tuple.Create<string, string?>("メールアドレス", null),
+        Tuple.Create<string, string?>("着任日", "joined_date"),
+    };
+    ViewData["ModalTitle"] = "メンバー詳細";
 }
 <form id="searchConditionForm">
     <div class="row">
@@ -24,267 +35,13 @@
     <input asp-for="SearchCondition.SortType" type="hidden" />
     @Html.AntiForgeryToken()
 </form>
-<div class="row mt-2">
-    <div class="d-flex flex-row">
-        <button id="searchButton" class="btn btn-primary">
-            <i class="bi bi-search"></i> 検索
-        </button>
-        <button id="clearButton" class="btn btn-primary ms-2">
-            <i class="bi bi-eraser-fill"></i> クリア
-        </button>
-    </div>
-</div>
-<table class="table table-hover mt-2">
-    <thead class="sticky-top bg-white">
-        <tr class="border-bottom-0">
-            <td id="resultMessage" colspan="7" class="border-bottom-0"></td>
-        </tr>
-        <tr id="tableHeader" class="d-none align-baseline">
-            <th>Seq.</th>
-            <th>メンバーコード <button class="btn btn-sort" data-sort-item="member_code"><i class="bi bi-arrow-down-up"></i></button></th>
-            <th>氏名</th>
-            <th>カナ氏名</th>
-            <th>英字氏名</th>
-            <th>メールアドレス</th>
-            <th>着任日 <button class="btn btn-sort" data-sort-item="joined_date"><i class="bi bi-arrow-down-up"></i></button></th>
-        </tr>
-    </thead>
-    <tbody id="tableBody">
-    </tbody>
-</table>
-<div id="tableLoading" class="text-center d-none">
-    <div class="spinner-border text-secondary" role="status">
-        <span class="visually-hidden">Loading...</span>
-    </div>
-</div>
 
-<div id="scrollToTopButton" class="btn btn-primary btn-to-top d-none"><i class="bi bi-caret-up-fill"></i></div>
+<partial name="_SearchListPartial" />
 
-<div class="modal fade" id="memberDetailModal" role="dialog" aria-labelledby="memberDetailModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="memberDetailModalLabel">メンバー詳細</h5>
-            </div>
-            <div class="modal-body">
-                <div id="modalBodyLoading" class="text-center">
-                    <div class="spinner-border text-secondary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
-                <div id="modalBodyContent">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="closeModalButton" type="button" class="btn btn-primary"><i class="bi bi-x-lg"></i> 閉じる</button>
-                <button id="saveMemberButton" type="button" class="btn btn-primary"><i class="bi bi-save" disabled></i> 保存</button>
-            </div>
-        </div>
-    </div>
-</div>
+<partial name="_ModalPartial" />
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        const form = document.querySelector("#searchConditionForm");
-        const offsetRowsHidden = document.querySelector("input[name='SearchCondition.OffsetRows']");
-        const sortItemHidden = document.querySelector("input[name='SearchCondition.SortItem']");
-        const sortTypeHidden = document.querySelector("input[name='SearchCondition.SortType']");
-        const searchButton = document.querySelector("#searchButton");
-        const clearButton = document.querySelector("#clearButton");
-        const table = document.querySelector("table");
-        const resultMessage = document.querySelector("#resultMessage");
-        const tableHeader = document.querySelector("#tableHeader");
-        const sortButtons = document.querySelectorAll(".btn-sort");
-        const tableBody = document.querySelector("#tableBody");
-        const tableLoading = document.querySelector("#tableLoading");
-        const scrollToTopButton = document.querySelector("#scrollToTopButton");
-        const memberDetailModal = new bootstrap.Modal(document.querySelector("#memberDetailModal"));
-        const modalBodyLoading = document.querySelector("#modalBodyLoading");
-        const modalBodyContent = document.querySelector("#modalBodyContent");
-        const saveMemberButton = document.querySelector("#saveMemberButton");
-        const closeModalButton = document.querySelector("#closeModalButton");
-        const token = document.querySelector("[name='__RequestVerificationToken']").value;
-        let isFetchInProgress = false;
-        let totalRecordsCount = 0;
-        let searchParams;
-        // 検索ボタンクリックイベント
-        searchButton.addEventListener("click", () => search());
-        // Enterキー押下イベント
-        form.addEventListener("keydown", (e) => {
-            if (e.keyCode === 13) {
-                search();
-                e.preventDefault();
-            }
-        });
-        // クリアボタンクリックイベント
-        clearButton.addEventListener("click", () => {
-            form.reset();
-            sortItemHidden.value = "";
-            sortTypeHidden.value = "";
-            clearResult();
-        });
-        // 各列のソートボタンクリックイベント
-        sortButtons.forEach((button) => {
-            button.addEventListener("click", (e) => {
-                let sortItem = e.currentTarget.getAttribute("data-sort-item");
-                sortTypeHidden.value = sortItemHidden.value == sortItem && sortTypeHidden.value == "asc" ? "desc" : "asc";
-                sortItemHidden.value = sortItem;
-                search();
-            });
-        });
-        // トップへ戻るボタンクリックイベント
-        scrollToTopButton.addEventListener("click", () => window.scroll({ top: 0, behavior: "smooth" }));
-        // スクロールイベント
-        window.addEventListener("scroll", () => {
-            const { scrollHeight, scrollTop, clientHeight } = document.documentElement;
-            // 次の検索結果行をフェッチ
-            if (!isFetchInProgress
-                && scrollHeight <= scrollTop + clientHeight
-                && parseInt(offsetRowsHidden.value, 10) < totalRecordsCount) {
-                fetchResultRows();
-            }
-            // トップへ戻るボタンの表示制御
-            if (140 < scrollTop) {
-                scrollToTopButton.classList.remove("d-none");
-            } else {
-                scrollToTopButton.classList.add("d-none");
-            }
-        });
-        // 検索結果各行のクリックイベント
-        table.addEventListener("click", (e) => {
-            let memberCode = e.target.closest("tr").getAttribute("data-member-code");
-            if (memberCode) {
-                modalBodyContent.classList.add("d-none");
-                modalBodyLoading.classList.remove("d-none");
-                // メンバー詳細の読み込み
-                let formData = new FormData();
-                formData.append("MemberCode", memberCode);
-                formData.append("__RequestVerificationToken", token);
-                fetch("?Handler=GetMemberDetail", { method: "POST", body: formData })
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error("読み込みに失敗しました");
-                        }
-                        return response.text();
-                    })
-                    .then((text) => {
-                        modalBodyContent.innerHTML = text;
-                        let newForm = document.querySelector("#memberDetailForm");
-                        $(newForm).removeData("validator");
-                        $(newForm).removeData("unobtrusiveValidation");
-                        $.validator.unobtrusive.parse($(newForm));
-                        enableSaveButton(newForm);
-                        newForm.querySelectorAll("input").forEach((inputElem) => inputElem.addEventListener("input", () => enableSaveButton(newForm)));
-                    })
-                    .catch((error) => {
-                        modalBodyContent.innerHTML = `<div>${error}</div>`;
-                    })
-                    .finally(() => {
-                        modalBodyLoading.classList.add("d-none");
-                        modalBodyContent.classList.remove("d-none");
-                    });
-                // モーダルの表示
-                memberDetailModal.show();
-            }
-        });
-        // 保存ボタンの活性制御
-        function enableSaveButton(newFormElem) {
-            let canSave = false;
-            if ($(newFormElem).valid()) {
-                newFormElem.querySelectorAll("input[data-original-value]").forEach((inputElem) => {
-                    if (inputElem.value != inputElem.getAttribute("data-original-value")) {
-                        canSave = true;
-                    }
-                });
-            }
-            if (canSave) {
-                saveMemberButton.removeAttribute("disabled");
-            } else {
-                saveMemberButton.setAttribute("disabled", "disabled");
-            }
-        }
-        // モーダルの保存ボタンクリックイベント
-        saveMemberButton.addEventListener("click", () => {
-            memberDetailModal.hide();
-            let formData = new FormData(document.querySelector("#memberDetailForm"));
-            formData.append("__RequestVerificationToken", token);
-            fetch("?Handler=SaveMember", { method: "POST", body: formData })
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("保存に失敗しました");
-                    }
-                    return response.text();
-                })
-                .then((text) => {
-                    modalBodyContent.classList.add("d-none");
-                    modalBodyLoading.classList.remove("d-none");
-                    alert(text);
-                    search();
-                })
-                .catch((error) => {
-                    alert(error);
-                    memberDetailModal.show();
-                });
-        });
-        // モーダルの閉じるボタンクリックイベント
-        closeModalButton.addEventListener("click", () => memberDetailModal.hide());
-        // 検索結果のクリア
-        function clearResult() {
-            searchParams = null;
-            offsetRowsHidden.value = "0";
-            totalRecordsCount = 0;
-            resultMessage.textContent = "";
-            tableHeader.classList.add("d-none");
-            tableBody.innerHTML = "";
-            sortButtons.forEach((button) => {
-                if (sortItemHidden.value == button.getAttribute("data-sort-item")) {
-                    button.innerHTML = sortTypeHidden.value == "asc"
-                        ? "<i class='bi bi-sort-alpha-down'></i>"
-                        : "<i class='bi bi-sort-alpha-down-alt'></i>";
-                } else {
-                    button.innerHTML = "<i class='bi bi-arrow-down-up'></i>";
-                }
-            });
-        }
-        // 検索開始
-        function search() {
-            clearResult();
-            searchParams = new URLSearchParams(new FormData(form));
-            fetchResultRows();
-        }
-        // 検索実行と結果行のフェッチ
-        function fetchResultRows() {
-            isFetchInProgress = true;
-            tableLoading.classList.remove("d-none");
-            searchParams.set("SearchCondition.OffsetRows", offsetRowsHidden.value);
-            fetch("?Handler=SearchMember", { method: "POST", body: searchParams })
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("読み込みに失敗しました");
-                    }
-                    totalRecordsCount = parseInt(response.headers.get("X-total-records-count"), 10);
-                    if (offsetRowsHidden.value == 0 || 0 < totalRecordsCount) {
-                        resultMessage.textContent = `件数: ${totalRecordsCount}`;
-                        if (0 < totalRecordsCount) {
-                            tableHeader.classList.remove("d-none");
-                        }
-                    }
-                    if (response.headers.has("X-last-seq")) {
-                        offsetRowsHidden.value = response.headers.get("X-last-seq");
-                    }
-                    return response.text();
-                })
-                .then((text) => {
-                    tableBody.insertAdjacentHTML("beforeend", text);
-                })
-                .catch((error) => {
-                    resultMessage.innerHTML = error;
-                })
-                .finally(() => {
-                    tableLoading.classList.add("d-none");
-                    isFetchInProgress = false;
-                });
-        }
-    </script>
+    <partial name="_SearchListScriptPartial" />
+    <partial name="_ModalScriptPartial" />
 }

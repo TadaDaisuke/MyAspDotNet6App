@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.Negotiate;
+﻿global using MyAspDotNet6App.Common;
+global using static MyAspDotNet6App.Common.Constants;
+using Microsoft.AspNetCore.Authentication.Negotiate;
 using MyAspDotNet6App.Domain;
 using MyAspDotNet6App.SqlDataAccess;
 
@@ -20,6 +22,8 @@ var context = new MyAppContext(builder.Configuration.GetConnectionString("MyData
 builder.Services.AddSingleton(context);
 builder.Services.AddSingleton<IMemberRepository, SqlMemberRepository>();
 builder.Services.AddSingleton<IMemberService, MemberService>();
+builder.Services.AddSingleton<IDepartmentRepository, SqlDepartmentRepository>();
+builder.Services.AddSingleton<IDepartmentService, DepartmentService>();
 
 var app = builder.Build();
 

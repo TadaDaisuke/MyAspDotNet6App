@@ -1,0 +1,22 @@
+﻿<div class="modal fade" id="detailModal" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLabel">@ViewData["ModalTitle"]</h5>
+            </div>
+            <div class="modal-body">
+                <div id="modalBodyLoading" class="text-center">
+                    <div class="spinner-border text-secondary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="modalBodyContent">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="closeModalButton" type="button" class="btn btn-primary"><i class="bi bi-x-lg"></i> 閉じる</button>
+                <button id="saveButton" type="button" class="btn btn-primary"><i class="bi bi-save" disabled></i> 保存</button>
+            </div>
+        </div>
+    </div>
+</div>

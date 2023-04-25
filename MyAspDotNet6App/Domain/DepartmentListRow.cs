@@ -1,17 +1,17 @@
 ﻿namespace MyAspDotNet6App.Domain;
 
-public class MemberListRow
+public class DepartmentListRow
 {
-    public Member Member { get; set; }
+    public Department Department { get; set; }
     public int Seq { get; set; }
     public int TotalRecordsCount { get; set; }
 
-    public MemberListRow(
-        Member member,
+    public DepartmentListRow(
+        Department department,
         int seq,
         int totalRecordsCount)
     {
-        Member = member;
+        Department = department;
         Seq = seq;
         TotalRecordsCount = totalRecordsCount;
     }

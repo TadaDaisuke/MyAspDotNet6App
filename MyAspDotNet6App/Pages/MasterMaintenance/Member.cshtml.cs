@@ -2,53 +2,52 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MyAspDotNet6App.Domain;
 
-namespace MyAspDotNet6App.Pages.MasterMaintenance
+namespace MyAspDotNet6App.Pages.MasterMaintenance;
+
+public class MemberModel : PageModel
 {
-    public class MemberModel : PageModel
+    private readonly IMemberService _memberService;
+
+    public MemberModel(IMemberService memberService)
     {
-        private readonly IMemberService _memberService;
+        _memberService = memberService;
+    }
 
-        public MemberModel(IMemberService memberService)
+    [BindProperty]
+    public MemberSearchCondition SearchCondition { get; set; } = new MemberSearchCondition();
+
+    public void OnGet()
+    {
+    }
+
+    public PartialViewResult OnPostSearch()
+    {
+        var members = _memberService.SearchMembers(SearchCondition);
+        Response.Headers.Add("X-total-records-count", (members.FirstOrDefault()?.TotalRecordsCount ?? 0).ToString());
+        Response.Headers.Add("X-last-seq", members.Max(x => x?.Seq)?.ToString());
+        return Partial("MemberList", members);
+    }
+
+    public PartialViewResult OnPostGetDetail([FromForm] string? detailKey)
+    {
+        if (detailKey == null)
         {
-            _memberService = memberService;
+            throw new ArgumentNullException(nameof(detailKey));
         }
+        return Partial("MemberDetail", _memberService.GetMember(detailKey));
+    }
 
-        [BindProperty]
-        public MemberSearchCondition SearchCondition { get; set; } = new MemberSearchCondition();
-
-        public void OnGet()
+    public ContentResult OnPostSaveDetail([FromForm] Member? member)
+    {
+        if (member == null)
         {
+            throw new ArgumentNullException(nameof(member));
         }
-
-        public PartialViewResult OnPostSearchMember()
+        if (!ModelState.IsValid)
         {
-            var members = _memberService.SearchMembers(SearchCondition);
-            Response.Headers.Add("X-total-records-count", (members.FirstOrDefault()?.TotalRecordsCount ?? 0).ToString());
-            Response.Headers.Add("X-last-seq", members.Max(x => x?.Seq)?.ToString());
-            return Partial("MemberList", members);
+            throw new InvalidDataException(nameof(member));
         }
-
-        public PartialViewResult OnPostGetMemberDetail([FromForm] string? memberCode)
-        {
-            if (memberCode == null)
-            {
-                throw new ArgumentNullException(nameof(memberCode));
-            }
-            return Partial("MemberDetail", _memberService.GetMember(memberCode));
-        }
-
-        public ContentResult OnPostSaveMember([FromForm] Member? memberToSave)
-        {
-            if (memberToSave == null)
-            {
-                throw new ArgumentException(nameof(memberToSave));
-            }
-            if (!ModelState.IsValid)
-            {
-                throw new InvalidDataException(nameof(memberToSave));
-            }
-            _memberService.SaveMember(memberToSave);
-            return Content("更新しました");
-        }
+        _memberService.SaveMember(member);
+        return Content("更新しました");
     }
 }

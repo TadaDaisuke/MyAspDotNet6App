@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var breadCrumbs = ViewData["BreadCrumbs"] as List<Tuple<string, string>>;
+}
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="utf-8" />
@@ -30,15 +33,9 @@
         <nav aria-label="Breadcrumb" class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-light border-bottom mb-3">
             <div class="container">
                 <ol class="breadcrumb mb-0">
-                    @{
-                        var breadCrumbs = ViewData["BreadCrumbs"] as List<Tuple<string, string>>;
-                        if (breadCrumbs != null)
-                        {
-                            foreach (var bc in breadCrumbs)
-                            {
-                                <li class="breadcrumb-item"><a asp-area="" asp-page="@bc.Item1">@bc.Item2</a></li>
-                            }
-                        }
+                    @foreach (var bc in breadCrumbs.OrEmptyIfNull())
+                    {
+                        <li class="breadcrumb-item"><a asp-area="" asp-page="@bc.Item1">@bc.Item2</a></li>
                     }
                     <li class="breadcrumb-item" active>@ViewData["Title"]</li>
                 </ol>

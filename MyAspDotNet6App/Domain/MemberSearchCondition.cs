@@ -1,22 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MyAspDotNet6App.Domain
+namespace MyAspDotNet6App.Domain;
+
+public class MemberSearchCondition
 {
-    public class MemberSearchCondition
-    {
-        public int OffsetRows { get; set; } = 0;
+    public int OffsetRows { get; set; } = 0;
 
-        public string? SortItem { get; set; }
+    public string? SortItem { get; set; }
 
-        public string? SortType { get; set; }
+    public string? SortType { get; set; }
 
-        [Display(Name = "氏名の一部")]
-        public string? MemberNamePart { get; set; }
+    [Display(Name = "氏名の一部")]
+    public string? MemberNamePart { get; set; }
 
-        [Display(Name = "着任日 From")]
-        public DateTime? JoinedDateFrom { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
+    [Display(Name = "着任日 From")]
+    public DateTime? JoinedDateFrom { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
 
-        [Display(Name = "着任日 To")]
-        public DateTime? JoinedDateTo { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
-    }
+    [Display(Name = "着任日 To")]
+    public DateTime? JoinedDateTo { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
 }
