@@ -18,4 +18,7 @@ public class MemberSearchCondition
 
     [Display(Name = "着任日 To")]
     public DateTime? JoinedDateTo { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
+
+    [Display(Name = "所属部署")]
+    public string? DepartmentCode { get; set; }
 }

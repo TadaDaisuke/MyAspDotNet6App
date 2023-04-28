@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyAspDotNet6App.Domain;
 
@@ -44,6 +45,14 @@ public class Member
     [Display(Name = "着任日")]
     [Required(AllowEmptyStrings = false, ErrorMessage = "着任日は入力必須です")]
     public DateTime? JoinedDate { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
+
+    [Display(Name = "所属部署")]
+    [Required(AllowEmptyStrings = false, ErrorMessage = "所属部署は選択必須です")]
+    public string? DepartmentCode { get; set; }
+
+    public string? DepartmentName { get; set; }
+
+    public IEnumerable<SelectListItem>? DepartmentListItems { get; set; }
 
     public string FullName => $"{GivenName} {FamilyName}";
 

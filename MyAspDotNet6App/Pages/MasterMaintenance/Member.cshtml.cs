@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MyAspDotNet6App.Domain;
 
 namespace MyAspDotNet6App.Pages.MasterMaintenance;
@@ -8,16 +9,25 @@ public class MemberModel : PageModel
 {
     private readonly IMemberService _memberService;
 
-    public MemberModel(IMemberService memberService)
+    private readonly IEnumerable<SelectListItem> _departmentListItems;
+
+    public MemberModel(IMemberService memberService, IDepartmentService departmentService)
     {
         _memberService = memberService;
+        _departmentListItems = departmentService.GetAllDepartments()
+            .Select(x => new SelectListItem { Value = x.DepartmentCode, Text = x.DepartmentName })
+            .ToList();
     }
 
     [BindProperty]
     public MemberSearchCondition SearchCondition { get; set; } = new MemberSearchCondition();
 
+    [BindProperty]
+    public IEnumerable<SelectListItem>? DepartmentListItems { get; set; }
+
     public void OnGet()
     {
+        DepartmentListItems = _departmentListItems.ToList();
     }
 
     public PartialViewResult OnPostSearch()
@@ -34,7 +44,9 @@ public class MemberModel : PageModel
         {
             throw new ArgumentNullException(nameof(detailKey));
         }
-        return Partial("MemberDetail", _memberService.GetMember(detailKey));
+        var member = _memberService.GetMember(detailKey) ?? throw new InvalidOperationException(detailKey.ToString());
+        member.DepartmentListItems = _departmentListItems.ToList();
+        return Partial("MemberDetail", member);
     }
 
     public ContentResult OnPostSaveDetail([FromForm] Member? member)

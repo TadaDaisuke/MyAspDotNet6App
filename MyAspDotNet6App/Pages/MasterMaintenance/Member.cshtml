@@ -7,11 +7,12 @@
     {
         Tuple.Create<string, string?>("Seq.", null),
         Tuple.Create<string, string?>("メンバーコード", "member_code"),
-        Tuple.Create<string, string?>("氏名", null),
+        Tuple.Create<string, string?>("漢字氏名", null),
         Tuple.Create<string, string?>("カナ氏名", null),
         Tuple.Create<string, string?>("英字氏名", null),
         Tuple.Create<string, string?>("メールアドレス", null),
         Tuple.Create<string, string?>("着任日", "joined_date"),
+        Tuple.Create<string, string?>("所属部署", "department_code"),
     };
     ViewData["ModalTitle"] = "メンバー詳細";
 }
@@ -28,6 +29,12 @@
         <div class="col-3">
             <label asp-for="SearchCondition.JoinedDateTo" class="form-label"></label>
             <input asp-for="SearchCondition.JoinedDateTo" type="date" class="form-control" />
+        </div>
+        <div class="col-3">
+            <label asp-for="SearchCondition.DepartmentCode" class="form-label"></label>
+            <select asp-for="SearchCondition.DepartmentCode" class="form-select" asp-items="@Model.DepartmentListItems">
+                <option value=""></option>
+            </select>
         </div>
     </div>
     <input asp-for="SearchCondition.OffsetRows" type="hidden" value="0" />

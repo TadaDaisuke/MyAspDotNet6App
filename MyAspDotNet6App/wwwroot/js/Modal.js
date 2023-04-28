@@ -9,7 +9,7 @@ table.addEventListener("click", (e) => {
     if (detailKey) {
         modalBodyContent.classList.add("d-none");
         modalBodyLoading.classList.remove("d-none");
-        // メンバー詳細の読み込み
+        // 詳細の読み込み
         let formData = new FormData();
         formData.append("detailKey", detailKey);
         formData.append("__RequestVerificationToken", token);
@@ -28,6 +28,7 @@ table.addEventListener("click", (e) => {
                 $.validator.unobtrusive.parse($(newForm));
                 enableSaveButton(newForm);
                 newForm.querySelectorAll("input").forEach((inputElem) => inputElem.addEventListener("input", () => enableSaveButton(newForm)));
+                newForm.querySelectorAll("select").forEach((dropdownElem) => dropdownElem.addEventListener("change", () => enableSaveButton(newForm)));
             })
             .catch((error) => {
                 modalBodyContent.innerHTML = `<div>${error}</div>`;
@@ -46,6 +47,11 @@ function enableSaveButton(newFormElem) {
     if ($(newFormElem).valid()) {
         newFormElem.querySelectorAll("input[data-original-value]").forEach((inputElem) => {
             if (inputElem.value != inputElem.getAttribute("data-original-value")) {
+                canSave = true;
+            }
+        });
+        newFormElem.querySelectorAll("select[data-original-value]").forEach((dropdownElem) => {
+            if (dropdownElem.value != dropdownElem.getAttribute("data-original-value")) {
                 canSave = true;
             }
         });

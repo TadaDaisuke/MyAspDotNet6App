@@ -27,8 +27,6 @@
             <input asp-for="FamilyNameKana" type="text" class="form-control" value="@Model.FamilyNameKana" data-original-value="@Model.FamilyNameKana" />
             <span asp-validation-for="FamilyNameKana"></span>
         </div>
-    </div>
-    <div class="row">
         <div class="col-3">
             <label asp-for="GivenName" class="form-label"></label>
             <input asp-for="GivenName" type="text" class="form-control" value="@Model.GivenName" data-original-value="@Model.GivenName" />
@@ -48,6 +46,13 @@
             <label asp-for="JoinedDate" class="form-label"></label>
             <input asp-for="JoinedDate" type="date" class="form-control" value="@Model.JoinedDate?.ToString(DEFAULT_DATEONLY_FORMAT)" data-original-value="@Model.JoinedDate?.ToString(DEFAULT_DATEONLY_FORMAT)" />
             <span asp-validation-for="JoinedDate"></span>
+        </div>
+        <div class="col-3">
+            <label asp-for="DepartmentCode" class="form-label"></label>
+            <select asp-for="DepartmentCode" class="form-select" asp-items="@Model.DepartmentListItems" data-original-value="@Model.DepartmentCode">
+                <option value=""></option>
+            </select>
+            <span asp-validation-for="DepartmentCode"></span>
         </div>
     </div>
 </form>

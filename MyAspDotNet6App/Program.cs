@@ -20,10 +20,10 @@ builder.Services.AddRazorPages();
 
 var context = new MyAppContext(builder.Configuration.GetConnectionString("MyDatabaseConnectionString"));
 builder.Services.AddSingleton(context);
-builder.Services.AddSingleton<IMemberRepository, SqlMemberRepository>();
-builder.Services.AddSingleton<IMemberService, MemberService>();
 builder.Services.AddSingleton<IDepartmentRepository, SqlDepartmentRepository>();
 builder.Services.AddSingleton<IDepartmentService, DepartmentService>();
+builder.Services.AddSingleton<IMemberRepository, SqlMemberRepository>();
+builder.Services.AddSingleton<IMemberService, MemberService>();
 
 var app = builder.Build();
 

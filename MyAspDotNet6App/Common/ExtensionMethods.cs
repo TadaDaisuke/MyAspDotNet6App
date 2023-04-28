@@ -4,6 +4,9 @@ namespace MyAspDotNet6App.Common;
 
 public static class ExtensionMethods
 {
+    public static string? OrNullIfWhiteSpace(this string? value)
+        => string.IsNullOrWhiteSpace(value) ? null : value;
+
     public static int ToInt(this string? s, int defaultValue = 0)
         => int.TryParse(s, out int i) ? i : defaultValue;
 

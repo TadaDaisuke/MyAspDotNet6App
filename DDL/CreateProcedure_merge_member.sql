@@ -11,6 +11,7 @@ CREATE OR ALTER PROCEDURE dbo.sp_merge_member (
     ,@family_name_kanji NVARCHAR(128)
     ,@mail_address NVARCHAR(256)
     ,@joined_date DATE
+    ,@department_code NVARCHAR(6)
     ,@error_message NVARCHAR(4000) OUTPUT
     )
 AS
@@ -29,7 +30,8 @@ BEGIN
                 ,@family_name_kanji
                 ,@mail_address
                 ,@joined_date
-            ) AS src(member_code, given_name, family_name, given_name_kana, family_name_kana, given_name_kanji, family_name_kanji, mail_address, joined_date)
+                ,@department_code
+            ) AS src(member_code, given_name, family_name, given_name_kana, family_name_kana, given_name_kanji, family_name_kanji, mail_address, joined_date, department_code)
             ON (member.member_code = src.member_code)
         WHEN MATCHED
             THEN
@@ -42,6 +44,7 @@ BEGIN
                     ,family_name_kanji = src.family_name_kanji
                     ,mail_address = src.mail_address
                     ,joined_date = src.joined_date
+                    ,department_code = src.department_code
         WHEN NOT MATCHED
             THEN
                 INSERT (
@@ -54,6 +57,7 @@ BEGIN
                     ,family_name_kanji
                     ,mail_address
                     ,joined_date
+                    ,department_code
                     )
                 VALUES (
                     src.member_code
@@ -65,6 +69,7 @@ BEGIN
                     ,src.family_name_kanji
                     ,src.mail_address
                     ,src.joined_date
+                    ,src.department_code
                     );
 
         COMMIT TRANSACTION

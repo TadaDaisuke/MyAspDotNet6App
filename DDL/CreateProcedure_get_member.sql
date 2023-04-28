@@ -12,6 +12,7 @@ SELECT TOP 1 member_code
     ,family_name_kanji
     ,mail_address
     ,joined_date
+    ,department_code
 FROM member
 WHERE member_code = @member_code
 GO

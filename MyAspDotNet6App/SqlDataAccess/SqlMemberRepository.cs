@@ -20,6 +20,7 @@ public class SqlMemberRepository : IMemberRepository
             .AddParameter("@member_name_part", SqlDbType.NVarChar, memberSearchCondition?.MemberNamePart)
             .AddParameter("@joined_date_from", SqlDbType.Date, memberSearchCondition?.JoinedDateFrom)
             .AddParameter("@joined_date_to", SqlDbType.Date, memberSearchCondition?.JoinedDateTo)
+            .AddParameter("@department_code", SqlDbType.NVarChar, memberSearchCondition?.DepartmentCode.OrNullIfWhiteSpace())
             .AddParameter("@sort_item", SqlDbType.NVarChar, memberSearchCondition?.SortItem)
             .AddParameter("@sort_type", SqlDbType.NVarChar, memberSearchCondition?.SortType)
             .AddParameter("@offset_rows", SqlDbType.Int, memberSearchCondition?.OffsetRows ?? 0)
@@ -43,7 +44,8 @@ public class SqlMemberRepository : IMemberRepository
     }
 
     private Member CreateMember(Dictionary<string, string?> row)
-        => new Member()
+    {
+        var member = new Member()
         {
             MemberCode = row["member_code"],
             GivenName = row["given_name"],
@@ -55,6 +57,16 @@ public class SqlMemberRepository : IMemberRepository
             MailAddress = row["mail_address"],
             JoinedDate = row["joined_date"].ToNullableDateTime(DEFAULT_DATEONLY_FORMAT),
         };
+        if (row.ContainsKey("department_code"))
+        {
+            member.DepartmentCode = row["department_code"];
+        }
+        if (row.ContainsKey("department_name"))
+        {
+            member.DepartmentName = row["department_name"];
+        }
+        return member;
+    }
 
     public void SaveMember(Member member)
     {
@@ -68,6 +80,7 @@ public class SqlMemberRepository : IMemberRepository
             .AddParameter("@family_name_kanji", SqlDbType.NVarChar, member.FamilyNameKanji)
             .AddParameter("@mail_address", SqlDbType.NVarChar, member.MailAddress)
             .AddParameter("@joined_date", SqlDbType.Date, member.JoinedDate)
+            .AddParameter("@department_code", SqlDbType.NVarChar, member.DepartmentCode)
             .AddOutputParameter("@error_message", SqlDbType.NVarChar, 4000);
         var errorMessage = _context.ExecuteSql(cmd).Parameters["@error_message"].Value.ToString();
         if (!string.IsNullOrWhiteSpace(errorMessage))

@@ -126,3 +126,4 @@ dotnet_style_parentheses_in_other_binary_operators = always_for_clarity:silent
 dotnet_style_parentheses_in_relational_binary_operators = always_for_clarity:silent
 dotnet_style_parentheses_in_other_operators = never_if_unnecessary:silent
 dotnet_code_quality_unused_parameters = all:suggestion
+end_of_line = crlf

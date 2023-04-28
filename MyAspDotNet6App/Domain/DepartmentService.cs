@@ -10,6 +10,9 @@ public class DepartmentService : IDepartmentService
     public IEnumerable<DepartmentListRow> SearchDepartments(DepartmentSearchCondition? condition)
         => _departmentRepository.SearchDepartments(condition);
 
+    public IEnumerable<Department> GetAllDepartments()
+        => _departmentRepository.GetAllDepartments();
+
     public Department? GetDepartment(string departmentCode)
         => _departmentRepository.GetDepartment(departmentCode);
 
