@@ -52,6 +52,10 @@ SELECT ROW_NUMBER() OVER (
             ,IIF(@sort_item = N'joined_date' AND @sort_type = N'desc', mbr.joined_date, NULL) DESC
             ,IIF(@sort_item = N'member_code' AND @sort_type = N'asc', mbr.member_code, NULL) ASC
             ,IIF(@sort_item = N'member_code' AND @sort_type = N'desc', mbr.member_code, NULL) DESC
+            ,IIF(@sort_item = N'name_kana' AND @sort_type = N'asc', mbr.family_name_kana + N' ' + mbr.given_name_kana, NULL) ASC
+            ,IIF(@sort_item = N'name_kana' AND @sort_type = N'desc', mbr.family_name_kana + N' ' + mbr.given_name_kana, NULL) DESC
+            ,IIF(@sort_item = N'name_english' AND @sort_type = N'asc', mbr.given_name + N' ' + mbr.family_name, NULL) ASC
+            ,IIF(@sort_item = N'name_english' AND @sort_type = N'desc', mbr.given_name + N' ' + mbr.family_name, NULL) DESC
             ,IIF(@sort_item = N'department_code' AND @sort_type = N'asc', mbr.department_code, NULL) ASC
             ,IIF(@sort_item = N'department_code' AND @sort_type = N'desc', mbr.department_code, NULL) DESC
         ) AS seq
