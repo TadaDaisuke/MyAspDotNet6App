@@ -40,7 +40,7 @@ public class SqlDepartmentRepository : IDepartmentRepository
             .AddParameter("@offset_rows", SqlDbType.Int, 0)
             .AddParameter("@fetch_rows", SqlDbType.Int, int.MaxValue);
         return _context.GetRowList(cmd)
-            .Select(row => new Department() { DepartmentCode = row["department_code"], DepartmentName = row["department_name"] })
+            .Select(row => new Department { DepartmentCode = row["department_code"], DepartmentName = row["department_name"] })
             .ToList();
     }
 

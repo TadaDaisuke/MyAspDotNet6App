@@ -27,8 +27,14 @@ table.addEventListener("click", (e) => {
                 $(newForm).removeData("unobtrusiveValidation");
                 $.validator.unobtrusive.parse($(newForm));
                 enableSaveButton(newForm);
-                newForm.querySelectorAll("input").forEach((inputElem) => inputElem.addEventListener("input", () => enableSaveButton(newForm)));
-                newForm.querySelectorAll("select").forEach((dropdownElem) => dropdownElem.addEventListener("change", () => enableSaveButton(newForm)));
+                newForm.querySelectorAll("input").forEach((inputElem) => {
+                    inputElem.addEventListener("input", () => enableSaveButton(newForm));
+                    inputElem.setAttribute("data-original-value", inputElem.value);
+                });
+                newForm.querySelectorAll("select").forEach((dropdownElem) => {
+                    dropdownElem.addEventListener("change", () => enableSaveButton(newForm));
+                    dropdownElem.setAttribute("data-original-value", dropdownElem.value);
+                });
             })
             .catch((error) => {
                 modalBodyContent.innerHTML = `<div>${error}</div>`;
@@ -45,13 +51,8 @@ table.addEventListener("click", (e) => {
 function enableSaveButton(newFormElem) {
     let canSave = false;
     if ($(newFormElem).valid()) {
-        newFormElem.querySelectorAll("input[data-original-value]").forEach((inputElem) => {
+        newFormElem.querySelectorAll("[data-original-value]").forEach((inputElem) => {
             if (inputElem.value != inputElem.getAttribute("data-original-value")) {
-                canSave = true;
-            }
-        });
-        newFormElem.querySelectorAll("select[data-original-value]").forEach((dropdownElem) => {
-            if (dropdownElem.value != dropdownElem.getAttribute("data-original-value")) {
                 canSave = true;
             }
         });
