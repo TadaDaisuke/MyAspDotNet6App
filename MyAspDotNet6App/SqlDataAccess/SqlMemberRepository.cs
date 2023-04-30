@@ -70,7 +70,7 @@ public class SqlMemberRepository : IMemberRepository
 
     public void SaveMember(Member member)
     {
-        var cmd = new SqlCommand("sp_merge_member") { CommandType = CommandType.StoredProcedure }
+        var cmd = new SqlCommand("sp_save_member") { CommandType = CommandType.StoredProcedure }
             .AddParameter("@member_code", SqlDbType.NVarChar, member.MemberCode)
             .AddParameter("@given_name", SqlDbType.NVarChar, member.GivenName)
             .AddParameter("@family_name", SqlDbType.NVarChar, member.FamilyName)

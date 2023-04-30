@@ -1,7 +1,7 @@
 ﻿USE [MyDatabase]
 GO
 
-CREATE OR ALTER PROCEDURE dbo.sp_merge_member (
+CREATE OR ALTER PROCEDURE dbo.sp_save_member (
     @member_code NVARCHAR(8)
     ,@given_name NVARCHAR(128)
     ,@family_name NVARCHAR(128)

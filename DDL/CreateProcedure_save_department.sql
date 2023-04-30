@@ -1,7 +1,7 @@
 ﻿USE [MyDatabase]
 GO
 
-CREATE OR ALTER PROCEDURE dbo.sp_merge_department (
+CREATE OR ALTER PROCEDURE dbo.sp_save_department (
     @department_code NVARCHAR(6)
     ,@department_name NVARCHAR(128)
     ,@error_message NVARCHAR(4000) OUTPUT

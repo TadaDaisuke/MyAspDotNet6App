@@ -55,7 +55,7 @@ public class SqlDepartmentRepository : IDepartmentRepository
 
     public void SaveDepartment(Department department)
     {
-        var cmd = new SqlCommand("sp_merge_department") { CommandType = CommandType.StoredProcedure }
+        var cmd = new SqlCommand("sp_save_department") { CommandType = CommandType.StoredProcedure }
             .AddParameter("@department_code", SqlDbType.NVarChar, department.DepartmentCode)
             .AddParameter("@department_name", SqlDbType.NVarChar, department.DepartmentName)
             .AddOutputParameter("@error_message", SqlDbType.NVarChar, 4000);
