@@ -28,7 +28,11 @@ BEGIN
                     ,department_name
                     )
                 VALUES (
-                    src.department_code
+                    (
+                        SELECT N'Z' + FORMAT(ISNULL(MAX(CONVERT(INT, SUBSTRING(department_code, 2, 5)) + 1), 1), N'00000')
+                        FROM department
+                        WHERE department_code LIKE N'Z%'
+                        )
                     ,src.department_name
                     );
 

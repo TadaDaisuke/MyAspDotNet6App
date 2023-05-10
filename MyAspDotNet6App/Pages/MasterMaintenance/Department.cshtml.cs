@@ -37,6 +37,11 @@ public class DepartmentModel : PageModel
         return Partial("DepartmentDetail", _departmentService.GetDepartment(detailKey));
     }
 
+    public PartialViewResult OnPostGetBlankDetail()
+    {
+        return Partial("DepartmentDetail", new Department { DepartmentCode = "（新規）" });
+    }
+
     public ContentResult OnPostSaveDetail([FromForm] Department? department)
     {
         if (department == null)
@@ -49,5 +54,12 @@ public class DepartmentModel : PageModel
         }
         _departmentService.SaveDepartment(department);
         return Content("更新しました");
+    }
+
+    public FileContentResult OnPostDownloadExcel()
+    {
+        var bytes = _departmentService.DownloadDepartments(SearchCondition);
+        Response.Headers.Add("x-download-file-name", $"Departments_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+        return File(bytes, CONTENT_TYPE_XLSX);
     }
 }

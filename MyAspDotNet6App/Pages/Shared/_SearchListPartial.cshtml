@@ -1,5 +1,11 @@
 ﻿@{
     var cols = ViewData["ListColumns"] as List<Tuple<string, string?>>;
+    var hasModal = (ViewData["ModalTitle"] != null);
+    var tableClass = "table mt-2";
+    if (hasModal)
+    {
+        tableClass += " table-hover";
+    }
 }
 <div class="row mt-2">
     <div class="d-flex flex-row">
@@ -9,12 +15,17 @@
         <button id="clearButton" class="btn btn-primary ms-2">
             <i class="bi bi-eraser-fill"></i> クリア
         </button>
+        <button id="addNewButton" class="btn btn-primary ms-auto">
+            <i class="bi bi-plus-circle"></i> 新規登録
+        </button>
     </div>
 </div>
-<table class="table table-hover mt-2">
+<table class="@tableClass">
     <thead class="sticky-top bg-white">
         <tr class="border-bottom-0">
-            <td id="resultMessage" colspan="@cols?.Count" class="border-bottom-0"></td>
+            <td colspan="@cols?.Count" class="px-0 pb-0 border-bottom-0">
+                <div id="resultMessage" class="d-flex align-items-baseline"></div>
+            </td>
         </tr>
         <tr id="tableHeader" class="d-none align-baseline">
             @foreach (var col in cols.OrEmptyIfNull())
@@ -40,3 +51,29 @@
 </div>
 
 <div id="scrollToTopButton" class="btn btn-primary btn-to-top d-none"><i class="bi bi-caret-up-fill"></i></div>
+
+@if (hasModal)
+{
+    <div class="modal fade" id="detailModal" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel">@ViewData["ModalTitle"]</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="modalBodyLoading" class="text-center">
+                        <div class="spinner-border text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div id="modalBodyContent">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="closeModalButton" type="button" class="btn btn-primary"><i class="bi bi-x-lg"></i> 閉じる</button>
+                    <button id="saveButton" type="button" class="btn btn-primary"><i class="bi bi-save" disabled></i> 保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

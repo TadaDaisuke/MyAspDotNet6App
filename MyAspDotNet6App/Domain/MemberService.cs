@@ -15,4 +15,7 @@ public class MemberService : IMemberService
 
     public void SaveMember(Member member)
         => _memberRepository.SaveMember(member);
+
+    public byte[] DownloadMembers(MemberSearchCondition condition)
+        => _memberRepository.DownloadMembers(condition);
 }

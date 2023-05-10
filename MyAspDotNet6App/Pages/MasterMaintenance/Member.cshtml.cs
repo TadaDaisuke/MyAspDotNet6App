@@ -45,6 +45,16 @@ public class MemberModel : PageModel
         return Partial("MemberDetail", member);
     }
 
+    public PartialViewResult OnPostGetBlankDetail()
+    {
+        var member = new Member
+        {
+            MemberCode = "（新規）",
+            DepartmentListItems = DepartmentListItems.ToList()
+        };
+        return Partial("MemberDetail", member);
+    }
+
     public ContentResult OnPostSaveDetail([FromForm] Member? member)
     {
         if (member == null)
@@ -57,5 +67,12 @@ public class MemberModel : PageModel
         }
         _memberService.SaveMember(member);
         return Content("更新しました");
+    }
+
+    public FileContentResult OnPostDownloadExcel()
+    {
+        byte[] bytes = _memberService.DownloadMembers(SearchCondition);
+        Response.Headers.Add("X-download-file-name", $"Members_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+        return File(bytes, CONTENT_TYPE_XLSX);
     }
 }

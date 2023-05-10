@@ -96,6 +96,11 @@ function fetchResultRows() {
             if (offsetRowsHidden.value == 0 || 0 < totalRecordsCount) {
                 resultMessage.textContent = `件数: ${totalRecordsCount}`;
                 if (0 < totalRecordsCount) {
+                    const downloadButton = document.createElement("button");
+                    downloadButton.setAttribute("class", "btn btn-primary btn-sm ms-2");
+                    downloadButton.innerHTML = "<i class='bi bi-download'></i> Excelダウンロード";
+                    downloadButton.addEventListener("click", () => downloadExcel());
+                    resultMessage.appendChild(downloadButton);
                     tableHeader.classList.remove("d-none");
                 }
             }
@@ -113,5 +118,26 @@ function fetchResultRows() {
         .finally(() => {
             tableLoading.classList.add("d-none");
             isFetchInProgress = false;
+        });
+}
+// Excelダウンロード
+function downloadExcel() {
+    let downloadFileName;
+    fetch("?Handler=DownloadExcel", { method: "POST", body: new URLSearchParams(new FormData(form)) })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("ダウンロードに失敗しました");
+            }
+            downloadFileName = response.headers.get("X-download-file-name");
+            return response.blob();
+        })
+        .then((blob) => {
+            const a = document.createElement("a");
+            a.href = window.URL.createObjectURL(blob);
+            a.download = downloadFileName;
+            a.click();
+        })
+        .catch((error) => {
+            alert(error);
         });
 }

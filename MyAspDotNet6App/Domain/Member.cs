@@ -21,10 +21,12 @@ public class Member
 
     [Display(Name = "漢字名")]
     [Required(AllowEmptyStrings = false, ErrorMessage = "漢字名は入力必須です")]
+    [RegularExpression(@"^\S+$", ErrorMessage = "空白文字は使用できません")]
     public string? GivenNameKanji { get; set; }
 
     [Display(Name = "漢字姓")]
     [Required(AllowEmptyStrings = false, ErrorMessage = "漢字姓は入力必須です")]
+    [RegularExpression(@"^\S+$", ErrorMessage = "空白文字は使用できません")]
     public string? FamilyNameKanji { get; set; }
 
     [Display(Name = "カナ名")]

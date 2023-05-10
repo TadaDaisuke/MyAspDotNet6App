@@ -18,4 +18,7 @@ public class DepartmentService : IDepartmentService
 
     public void SaveDepartment(Department department)
         => _departmentRepository.SaveDepartment(department);
+
+    public byte[] DownloadDepartments(DepartmentSearchCondition? condition)
+        => _departmentRepository.DownloadDepartments(condition);
 }

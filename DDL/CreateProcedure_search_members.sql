@@ -1,7 +1,7 @@
 ﻿USE [MyDatabase]
 GO
 
-CREATE OR ALTER FUNCTION dbo.tvf_search_members (
+CREATE OR ALTER FUNCTION dbo.tvf_members_filtered (
     @member_name_part NVARCHAR(128)
     ,@joined_date_from DATE
     ,@joined_date_to DATE
@@ -11,6 +11,9 @@ RETURNS TABLE
 AS
 RETURN (
         SELECT *
+            ,given_name + N' ' + family_name AS full_name
+            ,family_name_kana + N' ' + given_name_kana AS full_name_kana
+            ,family_name_kanji + N' ' + given_name_kanji AS full_name_kanji
         FROM member
         WHERE (
                 @member_name_part IS NULL
@@ -36,6 +39,39 @@ RETURN (
         )
 GO
 
+CREATE OR ALTER FUNCTION dbo.tvf_members_sorted (
+    @member_name_part NVARCHAR(128)
+    ,@joined_date_from DATE
+    ,@joined_date_to DATE
+    ,@department_code NVARCHAR(6)
+    ,@sort_item NVARCHAR(128)
+    ,@sort_type NVARCHAR(4)
+    )
+RETURNS TABLE
+AS
+RETURN (
+        SELECT main.*
+            ,ROW_NUMBER() OVER (
+                ORDER BY IIF(@sort_item = N'joined_date' AND @sort_type = N'asc', main.joined_date, NULL) ASC
+                    ,IIF(@sort_item = N'joined_date' AND @sort_type = N'desc', main.joined_date, NULL) DESC
+                    ,IIF(@sort_item = N'member_code' AND @sort_type = N'asc', main.member_code, NULL) ASC
+                    ,IIF(@sort_item = N'member_code' AND @sort_type = N'desc', main.member_code, NULL) DESC
+                    ,IIF(@sort_item = N'name_kana' AND @sort_type = N'asc', main.full_name_kana, NULL) ASC
+                    ,IIF(@sort_item = N'name_kana' AND @sort_type = N'desc', main.full_name_kana, NULL) DESC
+                    ,IIF(@sort_item = N'name_english' AND @sort_type = N'asc', main.full_name, NULL) ASC
+                    ,IIF(@sort_item = N'name_english' AND @sort_type = N'desc', main.full_name, NULL) DESC
+                    ,IIF(@sort_item = N'department_code' AND @sort_type = N'asc', main.department_code, NULL) ASC
+                    ,IIF(@sort_item = N'department_code' AND @sort_type = N'desc', main.department_code, NULL) DESC
+                ) AS seq
+            ,total.total_records_count
+        FROM tvf_members_filtered(@member_name_part, @joined_date_from, @joined_date_to, @department_code) AS main
+        CROSS JOIN (
+            SELECT COUNT(*) AS total_records_count
+            FROM tvf_members_filtered(@member_name_part, @joined_date_from, @joined_date_to, @department_code)
+            ) AS total
+        )
+GO
+
 CREATE OR ALTER PROCEDURE dbo.sp_search_members (
     @member_name_part NVARCHAR(128)
     ,@joined_date_from DATE
@@ -47,35 +83,43 @@ CREATE OR ALTER PROCEDURE dbo.sp_search_members (
     ,@fetch_rows INT
     )
 AS
-SELECT ROW_NUMBER() OVER (
-        ORDER BY IIF(@sort_item = N'joined_date' AND @sort_type = N'asc', mbr.joined_date, NULL) ASC
-            ,IIF(@sort_item = N'joined_date' AND @sort_type = N'desc', mbr.joined_date, NULL) DESC
-            ,IIF(@sort_item = N'member_code' AND @sort_type = N'asc', mbr.member_code, NULL) ASC
-            ,IIF(@sort_item = N'member_code' AND @sort_type = N'desc', mbr.member_code, NULL) DESC
-            ,IIF(@sort_item = N'name_kana' AND @sort_type = N'asc', mbr.family_name_kana + N' ' + mbr.given_name_kana, NULL) ASC
-            ,IIF(@sort_item = N'name_kana' AND @sort_type = N'desc', mbr.family_name_kana + N' ' + mbr.given_name_kana, NULL) DESC
-            ,IIF(@sort_item = N'name_english' AND @sort_type = N'asc', mbr.given_name + N' ' + mbr.family_name, NULL) ASC
-            ,IIF(@sort_item = N'name_english' AND @sort_type = N'desc', mbr.given_name + N' ' + mbr.family_name, NULL) DESC
-            ,IIF(@sort_item = N'department_code' AND @sort_type = N'asc', mbr.department_code, NULL) ASC
-            ,IIF(@sort_item = N'department_code' AND @sort_type = N'desc', mbr.department_code, NULL) DESC
-        ) AS seq
-    ,mbr.member_code
-    ,mbr.given_name
-    ,mbr.family_name
-    ,mbr.given_name_kana
-    ,mbr.family_name_kana
-    ,mbr.given_name_kanji
-    ,mbr.family_name_kanji
-    ,mbr.mail_address
-    ,mbr.joined_date
+SELECT main.seq
+    ,main.member_code
+    ,main.given_name
+    ,main.family_name
+    ,main.given_name_kana
+    ,main.family_name_kana
+    ,main.given_name_kanji
+    ,main.family_name_kanji
+    ,main.mail_address
+    ,main.joined_date
     ,dpt.department_name
-    ,(
-        SELECT COUNT(*)
-        FROM tvf_search_members(@member_name_part, @joined_date_from, @joined_date_to, @department_code)
-        ) AS total_records_count
-FROM tvf_search_members(@member_name_part, @joined_date_from, @joined_date_to, @department_code) AS mbr
+    ,main.total_records_count
+FROM tvf_members_sorted(@member_name_part, @joined_date_from, @joined_date_to, @department_code, @sort_item, @sort_type) AS main
 INNER JOIN department AS dpt
-    ON dpt.department_code = mbr.department_code
-ORDER BY seq OFFSET @offset_rows ROWS
+    ON dpt.department_code = main.department_code
+ORDER BY main.seq OFFSET @offset_rows ROWS
 FETCH NEXT @fetch_rows ROWS ONLY
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_download_members (
+    @member_name_part NVARCHAR(128)
+    ,@joined_date_from DATE
+    ,@joined_date_to DATE
+    ,@department_code NVARCHAR(6)
+    ,@sort_item NVARCHAR(128)
+    ,@sort_type NVARCHAR(4)
+    )
+AS
+SELECT main.member_code AS [メンバーコード]
+    ,main.full_name_kanji AS [漢字氏名]
+    ,main.full_name_kana AS [カナ氏名]
+    ,main.full_name AS [英字氏名]
+    ,main.mail_address AS [メールアドレス]
+    ,main.joined_date AS [着任日]
+    ,dpt.department_name AS [所属部署]
+FROM tvf_members_sorted(@member_name_part, @joined_date_from, @joined_date_to, @department_code, @sort_item, @sort_type) AS main
+INNER JOIN department AS dpt
+    ON dpt.department_code = main.department_code
+ORDER BY main.seq
 GO

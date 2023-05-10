@@ -60,7 +60,10 @@ BEGIN
                     ,department_code
                     )
                 VALUES (
-                    src.member_code
+                    (
+                        SELECT N'A' + FORMAT(ISNULL(MAX(CONVERT(INT, SUBSTRING(member_code, 2, 7)) + 1), 1), N'0000000')
+                        FROM member
+                        )
                     ,src.given_name
                     ,src.family_name
                     ,src.given_name_kana

@@ -65,4 +65,13 @@ public class SqlDepartmentRepository : IDepartmentRepository
             throw new Exception(errorMessage);
         }
     }
+
+    public byte[] DownloadDepartments(DepartmentSearchCondition? departmentSearchCondition)
+    {
+        var cmd = new SqlCommand("sp_download_departments") { CommandType = CommandType.StoredProcedure }
+            .AddParameter("@department_name_part", SqlDbType.NVarChar, departmentSearchCondition?.DepartmentNamePart)
+            .AddParameter("@sort_item", SqlDbType.NVarChar, departmentSearchCondition?.SortItem)
+            .AddParameter("@sort_type", SqlDbType.NVarChar, departmentSearchCondition?.SortType);
+        return _context.CreateExcel(cmd, "Departments");
+    }
 }

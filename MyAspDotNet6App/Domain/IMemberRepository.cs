@@ -7,4 +7,6 @@ public interface IMemberRepository
     public Member? GetMember(string memberCode);
 
     public void SaveMember(Member member);
+
+    public byte[] DownloadMembers(MemberSearchCondition condition);
 }

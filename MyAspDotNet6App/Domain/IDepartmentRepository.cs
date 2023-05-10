@@ -9,4 +9,6 @@ public interface IDepartmentRepository
     public Department? GetDepartment(string departmentCode);
 
     public void SaveDepartment(Department department);
+
+    public byte[] DownloadDepartments(DepartmentSearchCondition? condition);
 }
