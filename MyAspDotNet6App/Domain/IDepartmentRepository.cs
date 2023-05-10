@@ -1,4 +1,6 @@
-﻿namespace MyAspDotNet6App.Domain;
+﻿using Microsoft.Data.SqlClient;
+
+namespace MyAspDotNet6App.Domain;
 
 public interface IDepartmentRepository
 {
@@ -10,5 +12,5 @@ public interface IDepartmentRepository
 
     public void SaveDepartment(Department department);
 
-    public byte[] DownloadDepartments(DepartmentSearchCondition? condition);
+    public SqlCommand GetDownloadCommand(DepartmentSearchCondition? condition);
 }

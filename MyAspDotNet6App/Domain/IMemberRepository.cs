@@ -1,4 +1,6 @@
-﻿namespace MyAspDotNet6App.Domain;
+﻿using Microsoft.Data.SqlClient;
+
+namespace MyAspDotNet6App.Domain;
 
 public interface IMemberRepository
 {
@@ -8,5 +10,5 @@ public interface IMemberRepository
 
     public void SaveMember(Member member);
 
-    public byte[] DownloadMembers(MemberSearchCondition condition);
+    public SqlCommand GetDownloadCommand(MemberSearchCondition? condition);
 }

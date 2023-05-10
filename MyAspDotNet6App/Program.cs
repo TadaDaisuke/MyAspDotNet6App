@@ -3,6 +3,7 @@ global using static MyAspDotNet6App.Common.Constants;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using MyAspDotNet6App.Domain;
 using MyAspDotNet6App.SqlDataAccess;
+using MyAspDotNet6App.Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ builder.Services.AddRazorPages();
 
 var context = new MyAppContext(builder.Configuration.GetConnectionString("MyDatabaseConnectionString"));
 builder.Services.AddSingleton(context);
+builder.Services.AddSingleton<IExcelCreator, ExcelCreator>();
 builder.Services.AddSingleton<IDepartmentRepository, SqlDepartmentRepository>();
 builder.Services.AddSingleton<IDepartmentService, DepartmentService>();
 builder.Services.AddSingleton<IMemberRepository, SqlMemberRepository>();

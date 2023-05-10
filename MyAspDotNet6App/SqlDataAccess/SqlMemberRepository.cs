@@ -89,15 +89,14 @@ public class SqlMemberRepository : IMemberRepository
         }
     }
 
-    public byte[] DownloadMembers(MemberSearchCondition? memberSearchCondition)
+    public SqlCommand GetDownloadCommand(MemberSearchCondition? memberSearchCondition)
     {
-        var cmd = new SqlCommand("sp_download_members") { CommandType = CommandType.StoredProcedure }
+        return new SqlCommand("sp_download_members") { CommandType = CommandType.StoredProcedure }
             .AddParameter("@member_name_part", SqlDbType.NVarChar, memberSearchCondition?.MemberNamePart)
             .AddParameter("@joined_date_from", SqlDbType.Date, memberSearchCondition?.JoinedDateFrom)
             .AddParameter("@joined_date_to", SqlDbType.Date, memberSearchCondition?.JoinedDateTo)
             .AddParameter("@department_code", SqlDbType.NVarChar, memberSearchCondition?.DepartmentCode.OrNullIfWhiteSpace())
             .AddParameter("@sort_item", SqlDbType.NVarChar, memberSearchCondition?.SortItem)
             .AddParameter("@sort_type", SqlDbType.NVarChar, memberSearchCondition?.SortType);
-        return _context.CreateExcel(cmd, "Members");
     }
 }
