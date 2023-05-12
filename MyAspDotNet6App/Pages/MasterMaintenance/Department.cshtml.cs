@@ -53,7 +53,7 @@ public class DepartmentModel : PageModel
     public FileContentResult OnPostDownloadExcel()
     {
         var bytes = _departmentService.DownloadDepartments(SearchCondition);
-        Response.Headers.Add("x-download-file-name", $"Departments_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+        Response.Headers.Add("X-download-file-name", $"Departments_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
         return File(bytes, CONTENT_TYPE_XLSX);
     }
 }

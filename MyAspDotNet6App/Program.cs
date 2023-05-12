@@ -3,7 +3,7 @@ global using static MyAspDotNet6App.Common.Constants;
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using MyAspDotNet6App.Domain;
 using MyAspDotNet6App.Logging;
-using MyAspDotNet6App.SqlDataAccess;
+using MyAspDotNet6App.MssqlDataAccess;
 using MyAspDotNet6App.Utilities;
 using Serilog;
 
@@ -36,9 +36,9 @@ try
     var context = new MyAppContext(builder.Configuration.GetConnectionString("MyDatabaseConnectionString"));
     builder.Services.AddSingleton(context);
     builder.Services.AddSingleton<IExcelCreator, ExcelCreator>();
-    builder.Services.AddSingleton<IDepartmentRepository, SqlDepartmentRepository>();
+    builder.Services.AddSingleton<IDepartmentRepository, MssqlDepartmentRepository>();
     builder.Services.AddSingleton<IDepartmentService, DepartmentService>();
-    builder.Services.AddSingleton<IMemberRepository, SqlMemberRepository>();
+    builder.Services.AddSingleton<IMemberRepository, MssqlMemberRepository>();
     builder.Services.AddSingleton<IMemberService, MemberService>();
 
     var app = builder.Build();

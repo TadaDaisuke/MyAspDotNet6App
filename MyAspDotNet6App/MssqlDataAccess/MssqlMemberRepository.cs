@@ -1,17 +1,17 @@
 ﻿using Microsoft.Data.SqlClient;
 using MyAspDotNet6App.Domain;
-using MyAspDotNet6App.SqlDataAccess.Common;
+using MyAspDotNet6App.MssqlDataAccess.Common;
 using MyAspDotNet6App.Utilities;
 using System.Data;
 
-namespace MyAspDotNet6App.SqlDataAccess;
+namespace MyAspDotNet6App.MssqlDataAccess;
 
-public class SqlMemberRepository : IMemberRepository
+public class MssqlMemberRepository : IMemberRepository
 {
     private readonly MyAppContext _context;
     private readonly IExcelCreator _excelCreator;
 
-    public SqlMemberRepository(MyAppContext context, IExcelCreator excelCreator)
+    public MssqlMemberRepository(MyAppContext context, IExcelCreator excelCreator)
     {
         _context = context;
         _excelCreator = excelCreator;

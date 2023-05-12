@@ -4,7 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 
-namespace MyAspDotNet6App.SqlDataAccess;
+namespace MyAspDotNet6App.MssqlDataAccess;
 
 public class MyAppContext
 {
