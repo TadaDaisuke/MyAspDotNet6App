@@ -1,20 +1,16 @@
-﻿using MyAspDotNet6App.Utilities;
-
-namespace MyAspDotNet6App.Domain;
+﻿namespace MyAspDotNet6App.Domain;
 
 public class MemberService : IMemberService
 {
     private readonly IMemberRepository _memberRepository;
-    private readonly IExcelCreator _excelCreator;
 
-    public MemberService(IMemberRepository memberRepository, IExcelCreator excelCreator)
+    public MemberService(IMemberRepository memberRepository)
     {
         _memberRepository = memberRepository;
-        _excelCreator = excelCreator;
     }
 
-    public IEnumerable<MemberListRow> SearchMembers(MemberSearchCondition? condition)
-        => _memberRepository.SearchMembers(condition);
+    public IEnumerable<MemberListRow> SearchMembers(MemberSearchCondition searchCondition)
+        => _memberRepository.SearchMembers(searchCondition);
 
     public Member? GetMember(string memberCode)
         => _memberRepository.GetMember(memberCode);
@@ -22,6 +18,6 @@ public class MemberService : IMemberService
     public void SaveMember(Member member)
         => _memberRepository.SaveMember(member);
 
-    public byte[] DownloadMembers(MemberSearchCondition condition)
-        => _excelCreator.CreateFileBytes(_memberRepository.GetDownloadCommand(condition), "Members");
+    public byte[] DownloadMembers(MemberSearchCondition searchCondition)
+        => _memberRepository.CreateExcelBytes(searchCondition, "Members");
 }

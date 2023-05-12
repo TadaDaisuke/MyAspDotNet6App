@@ -2,7 +2,7 @@
 
 public interface IDepartmentService
 {
-    public IEnumerable<DepartmentListRow> SearchDepartments(DepartmentSearchCondition? condition);
+    public IEnumerable<DepartmentListRow> SearchDepartments(DepartmentSearchCondition searchCondition);
 
     public IEnumerable<Department> GetAllDepartments();
 
@@ -10,5 +10,5 @@ public interface IDepartmentService
 
     public void SaveDepartment(Department department);
 
-    public byte[] DownloadDepartments(DepartmentSearchCondition? condition);
+    public byte[] DownloadDepartments(DepartmentSearchCondition searchCondition);
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using MyAspDotNet6App.Domain;
 using MyAspDotNet6App.SqlDataAccess.Common;
+using MyAspDotNet6App.Utilities;
 using System.Data;
 
 namespace MyAspDotNet6App.SqlDataAccess;
@@ -8,19 +9,21 @@ namespace MyAspDotNet6App.SqlDataAccess;
 public class SqlDepartmentRepository : IDepartmentRepository
 {
     private readonly MyAppContext _context;
+    private readonly IExcelCreator _excelCreator;
 
-    public SqlDepartmentRepository(MyAppContext context)
+    public SqlDepartmentRepository(MyAppContext context, IExcelCreator excelCreator)
     {
         _context = context;
+        _excelCreator = excelCreator;
     }
 
-    public IEnumerable<DepartmentListRow> SearchDepartments(DepartmentSearchCondition? departmentSearchCondition)
+    public IEnumerable<DepartmentListRow> SearchDepartments(DepartmentSearchCondition searchCondition)
     {
         var cmd = new SqlCommand("sp_search_departments") { CommandType = CommandType.StoredProcedure }
-            .AddParameter("@department_name_part", SqlDbType.NVarChar, departmentSearchCondition?.DepartmentNamePart)
-            .AddParameter("@sort_item", SqlDbType.NVarChar, departmentSearchCondition?.SortItem)
-            .AddParameter("@sort_type", SqlDbType.NVarChar, departmentSearchCondition?.SortType)
-            .AddParameter("@offset_rows", SqlDbType.Int, departmentSearchCondition?.OffsetRows ?? 0)
+            .AddParameter("@department_name_part", SqlDbType.NVarChar, searchCondition.DepartmentNamePart)
+            .AddParameter("@sort_item", SqlDbType.NVarChar, searchCondition.SortItem)
+            .AddParameter("@sort_type", SqlDbType.NVarChar, searchCondition.SortType)
+            .AddParameter("@offset_rows", SqlDbType.Int, searchCondition.OffsetRows)
             .AddParameter("@fetch_rows", SqlDbType.Int, _context.FETCH_ROW_SIZE);
         return _context.GetRowList(cmd)
             .Select(row =>
@@ -66,11 +69,12 @@ public class SqlDepartmentRepository : IDepartmentRepository
         }
     }
 
-    public SqlCommand GetDownloadCommand(DepartmentSearchCondition? departmentSearchCondition)
+    public byte[] CreateExcelBytes(DepartmentSearchCondition searchCondition, string sheetName)
     {
-        return new SqlCommand("sp_download_departments") { CommandType = CommandType.StoredProcedure }
-            .AddParameter("@department_name_part", SqlDbType.NVarChar, departmentSearchCondition?.DepartmentNamePart)
-            .AddParameter("@sort_item", SqlDbType.NVarChar, departmentSearchCondition?.SortItem)
-            .AddParameter("@sort_type", SqlDbType.NVarChar, departmentSearchCondition?.SortType);
+        var cmd = new SqlCommand("sp_download_departments") { CommandType = CommandType.StoredProcedure }
+            .AddParameter("@department_name_part", SqlDbType.NVarChar, searchCondition.DepartmentNamePart)
+            .AddParameter("@sort_item", SqlDbType.NVarChar, searchCondition.SortItem)
+            .AddParameter("@sort_type", SqlDbType.NVarChar, searchCondition.SortType);
+        return _excelCreator.CreateFileBytes(cmd, sheetName);
     }
 }

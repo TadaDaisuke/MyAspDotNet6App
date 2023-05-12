@@ -2,11 +2,11 @@
 
 public interface IMemberService
 {
-    public IEnumerable<MemberListRow> SearchMembers(MemberSearchCondition? condition);
+    public IEnumerable<MemberListRow> SearchMembers(MemberSearchCondition searchCondition);
 
     public Member? GetMember(string memberCode);
 
     public void SaveMember(Member member);
 
-    public byte[] DownloadMembers(MemberSearchCondition condition);
+    public byte[] DownloadMembers(MemberSearchCondition searchCondition);
 }

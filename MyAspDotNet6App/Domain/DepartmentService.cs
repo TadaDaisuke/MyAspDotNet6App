@@ -1,20 +1,16 @@
-﻿using MyAspDotNet6App.Utilities;
-
-namespace MyAspDotNet6App.Domain;
+﻿namespace MyAspDotNet6App.Domain;
 
 public class DepartmentService : IDepartmentService
 {
     private readonly IDepartmentRepository _departmentRepository;
-    private readonly IExcelCreator _excelCreator;
 
-    public DepartmentService(IDepartmentRepository departmentRepository, IExcelCreator excelCreator)
+    public DepartmentService(IDepartmentRepository departmentRepository)
     {
         _departmentRepository = departmentRepository;
-        _excelCreator = excelCreator;
     }
 
-    public IEnumerable<DepartmentListRow> SearchDepartments(DepartmentSearchCondition? condition)
-        => _departmentRepository.SearchDepartments(condition);
+    public IEnumerable<DepartmentListRow> SearchDepartments(DepartmentSearchCondition searchCondition)
+        => _departmentRepository.SearchDepartments(searchCondition);
 
     public IEnumerable<Department> GetAllDepartments()
         => _departmentRepository.GetAllDepartments();
@@ -25,6 +21,6 @@ public class DepartmentService : IDepartmentService
     public void SaveDepartment(Department department)
         => _departmentRepository.SaveDepartment(department);
 
-    public byte[] DownloadDepartments(DepartmentSearchCondition? condition)
-        => _excelCreator.CreateFileBytes(_departmentRepository.GetDownloadCommand(condition), "Departments");
+    public byte[] DownloadDepartments(DepartmentSearchCondition searchCondition)
+        => _departmentRepository.CreateExcelBytes(searchCondition, "Departments");
 }

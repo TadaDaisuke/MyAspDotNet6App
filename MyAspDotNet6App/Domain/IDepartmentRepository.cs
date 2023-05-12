@@ -1,10 +1,8 @@
-﻿using Microsoft.Data.SqlClient;
-
-namespace MyAspDotNet6App.Domain;
+﻿namespace MyAspDotNet6App.Domain;
 
 public interface IDepartmentRepository
 {
-    public IEnumerable<DepartmentListRow> SearchDepartments(DepartmentSearchCondition? condition);
+    public IEnumerable<DepartmentListRow> SearchDepartments(DepartmentSearchCondition searchCondition);
 
     public IEnumerable<Department> GetAllDepartments();
 
@@ -12,5 +10,5 @@ public interface IDepartmentRepository
 
     public void SaveDepartment(Department department);
 
-    public SqlCommand GetDownloadCommand(DepartmentSearchCondition? condition);
+    public byte[] CreateExcelBytes(DepartmentSearchCondition searchCondition, string sheetName);
 }

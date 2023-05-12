@@ -36,10 +36,7 @@ public class MemberModel : PageModel
 
     public PartialViewResult OnPostGetDetail([FromForm] string? detailKey)
     {
-        if (detailKey == null)
-        {
-            throw new ArgumentNullException(nameof(detailKey));
-        }
+        ArgumentNullException.ThrowIfNull(detailKey);
         var member = _memberService.GetMember(detailKey) ?? throw new InvalidOperationException(detailKey.ToString());
         member.DepartmentListItems = DepartmentListItems.ToList();
         return Partial("MemberDetail", member);
@@ -57,10 +54,7 @@ public class MemberModel : PageModel
 
     public ContentResult OnPostSaveDetail([FromForm] Member? member)
     {
-        if (member == null)
-        {
-            throw new ArgumentNullException(nameof(member));
-        }
+        ArgumentNullException.ThrowIfNull(member);
         if (!ModelState.IsValid)
         {
             throw new InvalidDataException(nameof(member));
@@ -71,7 +65,7 @@ public class MemberModel : PageModel
 
     public FileContentResult OnPostDownloadExcel()
     {
-        byte[] bytes = _memberService.DownloadMembers(SearchCondition);
+        var bytes = _memberService.DownloadMembers(SearchCondition);
         Response.Headers.Add("X-download-file-name", $"Members_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
         return File(bytes, CONTENT_TYPE_XLSX);
     }

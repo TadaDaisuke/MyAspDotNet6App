@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using MyAspDotNet6App.Domain;
 using MyAspDotNet6App.SqlDataAccess.Common;
+using MyAspDotNet6App.Utilities;
 using System.Data;
 
 namespace MyAspDotNet6App.SqlDataAccess;
@@ -8,22 +9,24 @@ namespace MyAspDotNet6App.SqlDataAccess;
 public class SqlMemberRepository : IMemberRepository
 {
     private readonly MyAppContext _context;
+    private readonly IExcelCreator _excelCreator;
 
-    public SqlMemberRepository(MyAppContext context)
+    public SqlMemberRepository(MyAppContext context, IExcelCreator excelCreator)
     {
         _context = context;
+        _excelCreator = excelCreator;
     }
 
-    public IEnumerable<MemberListRow> SearchMembers(MemberSearchCondition? memberSearchCondition)
+    public IEnumerable<MemberListRow> SearchMembers(MemberSearchCondition searchCondition)
     {
         var cmd = new SqlCommand("sp_search_members") { CommandType = CommandType.StoredProcedure }
-            .AddParameter("@member_name_part", SqlDbType.NVarChar, memberSearchCondition?.MemberNamePart)
-            .AddParameter("@joined_date_from", SqlDbType.Date, memberSearchCondition?.JoinedDateFrom)
-            .AddParameter("@joined_date_to", SqlDbType.Date, memberSearchCondition?.JoinedDateTo)
-            .AddParameter("@department_code", SqlDbType.NVarChar, memberSearchCondition?.DepartmentCode.OrNullIfWhiteSpace())
-            .AddParameter("@sort_item", SqlDbType.NVarChar, memberSearchCondition?.SortItem)
-            .AddParameter("@sort_type", SqlDbType.NVarChar, memberSearchCondition?.SortType)
-            .AddParameter("@offset_rows", SqlDbType.Int, memberSearchCondition?.OffsetRows ?? 0)
+            .AddParameter("@member_name_part", SqlDbType.NVarChar, searchCondition.MemberNamePart)
+            .AddParameter("@joined_date_from", SqlDbType.Date, searchCondition.JoinedDateFrom)
+            .AddParameter("@joined_date_to", SqlDbType.Date, searchCondition.JoinedDateTo)
+            .AddParameter("@department_code", SqlDbType.NVarChar, searchCondition.DepartmentCode.OrNullIfWhiteSpace())
+            .AddParameter("@sort_item", SqlDbType.NVarChar, searchCondition.SortItem)
+            .AddParameter("@sort_type", SqlDbType.NVarChar, searchCondition.SortType)
+            .AddParameter("@offset_rows", SqlDbType.Int, searchCondition.OffsetRows)
             .AddParameter("@fetch_rows", SqlDbType.Int, _context.FETCH_ROW_SIZE);
         return _context.GetRowList(cmd)
             .Select(row =>
@@ -43,7 +46,7 @@ public class SqlMemberRepository : IMemberRepository
             .FirstOrDefault();
     }
 
-    private Member CreateMember(Dictionary<string, string?> row)
+    private static Member CreateMember(Dictionary<string, string?> row)
     {
         var member = new Member()
         {
@@ -89,14 +92,15 @@ public class SqlMemberRepository : IMemberRepository
         }
     }
 
-    public SqlCommand GetDownloadCommand(MemberSearchCondition? memberSearchCondition)
+    public byte[] CreateExcelBytes(MemberSearchCondition searchCondition, string sheetName)
     {
-        return new SqlCommand("sp_download_members") { CommandType = CommandType.StoredProcedure }
-            .AddParameter("@member_name_part", SqlDbType.NVarChar, memberSearchCondition?.MemberNamePart)
-            .AddParameter("@joined_date_from", SqlDbType.Date, memberSearchCondition?.JoinedDateFrom)
-            .AddParameter("@joined_date_to", SqlDbType.Date, memberSearchCondition?.JoinedDateTo)
-            .AddParameter("@department_code", SqlDbType.NVarChar, memberSearchCondition?.DepartmentCode.OrNullIfWhiteSpace())
-            .AddParameter("@sort_item", SqlDbType.NVarChar, memberSearchCondition?.SortItem)
-            .AddParameter("@sort_type", SqlDbType.NVarChar, memberSearchCondition?.SortType);
+        var cmd = new SqlCommand("sp_download_members") { CommandType = CommandType.StoredProcedure }
+            .AddParameter("@member_name_part", SqlDbType.NVarChar, searchCondition.MemberNamePart)
+            .AddParameter("@joined_date_from", SqlDbType.Date, searchCondition.JoinedDateFrom)
+            .AddParameter("@joined_date_to", SqlDbType.Date, searchCondition.JoinedDateTo)
+            .AddParameter("@department_code", SqlDbType.NVarChar, searchCondition.DepartmentCode.OrNullIfWhiteSpace())
+            .AddParameter("@sort_item", SqlDbType.NVarChar, searchCondition.SortItem)
+            .AddParameter("@sort_type", SqlDbType.NVarChar, searchCondition.SortType);
+        return _excelCreator.CreateFileBytes(cmd, sheetName);
     }
 }

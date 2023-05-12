@@ -30,10 +30,7 @@ public class DepartmentModel : PageModel
 
     public PartialViewResult OnPostGetDetail([FromForm] string? detailKey)
     {
-        if (detailKey == null)
-        {
-            throw new ArgumentNullException(nameof(detailKey));
-        }
+        ArgumentNullException.ThrowIfNull(detailKey);
         return Partial("DepartmentDetail", _departmentService.GetDepartment(detailKey));
     }
 
@@ -44,10 +41,7 @@ public class DepartmentModel : PageModel
 
     public ContentResult OnPostSaveDetail([FromForm] Department? department)
     {
-        if (department == null)
-        {
-            throw new ArgumentNullException(nameof(department));
-        }
+        ArgumentNullException.ThrowIfNull(department);
         if (!ModelState.IsValid)
         {
             throw new InvalidDataException(nameof(department));
