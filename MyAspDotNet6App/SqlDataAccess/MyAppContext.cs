@@ -1,5 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
+using Serilog;
 using System.Data;
+using System.Diagnostics;
+using System.Text;
 
 namespace MyAspDotNet6App.SqlDataAccess;
 
@@ -56,6 +59,12 @@ public class MyAppContext
 
     public SqlCommand ExecuteSql(SqlCommand cmd)
     {
+        var callerMethod = new StackFrame(1)?.GetMethod();
+        var logMessage = new StringBuilder()
+            .AppendLine($"SQLを実行します。呼び出し元: {callerMethod?.ReflectedType?.FullName}.{callerMethod?.Name}")
+            .Append(GetCommandLogString(cmd))
+            .ToString();
+        Log.ForContext(GetType()).Information(logMessage);
         using (var conn = new SqlConnection(_connectionString))
         {
             conn.Open();
@@ -63,5 +72,28 @@ public class MyAppContext
             cmd.ExecuteNonQuery();
         }
         return cmd;
+    }
+
+    private static string GetCommandLogString(SqlCommand cmd)
+    {
+        var sb = new StringBuilder()
+            .AppendLine("[CommandText]")
+            .Append(cmd.CommandType == CommandType.Text ? "" : "    ")
+            .AppendLine(cmd.CommandText)
+            .AppendLine("[CommandType]")
+            .Append($"    {cmd.CommandType}");
+        if (cmd.Parameters.Count > 0)
+        {
+            static string? formatValue(object? o) =>
+                (o as DateTime?)?.ToString(DEFAULT_DATETIME_FORMAT)
+                    ?? (o as DateOnly?)?.ToString(DEFAULT_DATEONLY_FORMAT)
+                        ?? o?.ToString();
+            sb.AppendLine().AppendLine("[Parameters]").Append(string.Join(
+                Environment.NewLine,
+                cmd.Parameters
+                    .OfType<SqlParameter>()
+                    .Select(p => $"    {p.ParameterName}({p.SqlDbType}): {formatValue(p.Value)}")));
+        }
+        return sb.ToString();
     }
 }
