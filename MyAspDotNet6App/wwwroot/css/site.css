@@ -22,6 +22,11 @@ body {
     margin-bottom: 60px;
 }
 
+.breadcrumb-item + .breadcrumb-item::before {
+    font-family: "bootstrap-icons";
+    content: "\F285"; /* Chevron right */
+}
+
 .table {
     border-collapse: separate;
     border-spacing: 0;
@@ -31,9 +36,9 @@ body {
         font-size: smaller;
     }
 
-    .table tbody tr:hover {
-        cursor: pointer;
-    }
+        .table tbody tr:hover {
+            cursor: pointer;
+        }
 
 .btn-sort {
     font-size: 0.8rem;
