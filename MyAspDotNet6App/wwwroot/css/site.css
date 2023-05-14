@@ -40,6 +40,12 @@ body {
             cursor: pointer;
         }
 
+    .table tbody th,
+    .table tbody td {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+    }
+
 .btn-sort {
     font-size: 0.8rem;
     padding: 0.2em 0.5em;
