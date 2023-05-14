@@ -2,7 +2,7 @@
 using System.Data;
 using System.Text;
 
-namespace MyAspDotNet6App.MssqlDataAccess.Common;
+namespace MyAspDotNet6App.MssqlDataAccess;
 
 public static class ExtensionMethods
 {

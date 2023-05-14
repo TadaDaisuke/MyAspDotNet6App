@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using MyAspDotNet6App.Domain;
-using MyAspDotNet6App.MssqlDataAccess.Common;
 using MyAspDotNet6App.Utilities;
 using System.Data;
 
