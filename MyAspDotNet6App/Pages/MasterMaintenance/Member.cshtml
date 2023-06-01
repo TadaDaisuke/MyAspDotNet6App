@@ -54,11 +54,11 @@
     <div class="row">
         <div class="col">
             <label asp-for="SearchCondition.EmailDomain" class="form-label"></label><br />
-            @foreach (var emailDomain in Model.EmailDomains)
+            @foreach (var (emailDomain, index) in Model.EmailDomains.Select((v, i) => (v, i)))
             {
                 <div class="form-check form-check-inline">
-                    <input asp-for="SearchCondition.EmailDomain" class="form-check-input" type="radio" value="@emailDomain.Value" id="EmailDomain@(emailDomain.Id)" checked="@emailDomain.IsChecked" />
-                    <label class="form-check-label" for="EmailDomain@(emailDomain.Id)">@emailDomain.Label</label>
+                    <input asp-for="SearchCondition.EmailDomain" class="form-check-input" type="radio" id="EmailDomain@(index)" value="@emailDomain.Value" checked="@emailDomain.IsChecked" />
+                    <label class="form-check-label" for="EmailDomain@(index)">@emailDomain.Label</label>
                 </div>
             }
         </div>

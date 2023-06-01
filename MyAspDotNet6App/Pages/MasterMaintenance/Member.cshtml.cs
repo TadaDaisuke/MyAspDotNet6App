@@ -25,12 +25,12 @@ public class MemberModel : PageModel
             .ToList();
         EmailDomains = new List<RadioItem>
         {
-            new RadioItem("None", "指定なし", "", true),
-            new RadioItem("Com", ".com", ".com"),
-            new RadioItem("Net", ".net", ".net"),
-            new RadioItem("Org", ".org", ".org"),
-            new RadioItem("CoJp", ".co.jp", ".co.jp"),
-            new RadioItem("NeJp", ".ne.jp", ".ne.jp"),
+            new RadioItem("指定なし", "", true),
+            new RadioItem(".com", ".com"),
+            new RadioItem(".net", ".net"),
+            new RadioItem(".org", ".org"),
+            new RadioItem(".co.jp", ".co.jp"),
+            new RadioItem(".ne.jp", ".ne.jp"),
         };
     }
 
