@@ -4,14 +4,10 @@ const modalBodyContent = document.querySelector("#modalBodyContent");
 const saveButton = document.querySelector("#saveButton");
 const closeModalButton = document.querySelector("#closeModalButton");
 const addNewButton = document.querySelector("#addNewButton");
-window.addEventListener("DOMContentLoaded", () => {
-    // 新規登録ボタンの表示
-    addNewButton.classList.remove("d-none");
-});
 // 新規登録ボタンクリックイベント
 addNewButton.addEventListener("click", () => fetchAndShowModal("?Handler=GetBlankDetail", new FormData()));
 // 検索結果各行のクリックイベント
-table.addEventListener("click", (e) => {
+mainTable.addEventListener("click", (e) => {
     let detailKey = e.target.closest("tr")?.getAttribute("data-detail-key");
     if (detailKey) {
         let formData = new FormData();
@@ -43,8 +39,7 @@ function fetchAndShowModal(url, formData) {
             $(newForm).removeData("validator");
             $(newForm).removeData("unobtrusiveValidation");
             $.validator.unobtrusive.parse($(newForm));
-            enableSaveButton(newForm);
-            newForm.querySelectorAll("input").forEach((inputElem) => {
+            newForm.querySelectorAll("input,textarea").forEach((inputElem) => {
                 inputElem.setAttribute("data-original-value", inputElem.value);
                 inputElem.addEventListener("input", () => enableSaveButton(newForm));
             });

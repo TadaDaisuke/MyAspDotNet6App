@@ -9,4 +9,6 @@ public interface IMemberService
     public void SaveMember(Member member);
 
     public byte[] DownloadMembers(MemberSearchCondition searchCondition);
+
+    public IEnumerable<string> SuggestMemberCode(string memberCodePart);
 }

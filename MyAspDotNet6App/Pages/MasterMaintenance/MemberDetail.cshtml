@@ -43,16 +43,28 @@
             <span asp-validation-for="MailAddress"></span>
         </div>
         <div class="col-3">
-            <label asp-for="JoinedDate" class="form-label"></label>
-            <input asp-for="JoinedDate" type="date" class="form-control" value="@Model.JoinedDate?.ToString(DEFAULT_DATEONLY_FORMAT)" />
-            <span asp-validation-for="JoinedDate"></span>
-        </div>
-        <div class="col-3">
             <label asp-for="DepartmentCode" class="form-label"></label>
             <select asp-for="DepartmentCode" class="form-select" asp-items="@Model.DepartmentListItems">
                 <option value=""></option>
             </select>
             <span asp-validation-for="DepartmentCode"></span>
+        </div>
+        <div class="col-3">
+            <label asp-for="JoinedDate" class="form-label"></label>
+            <input asp-for="JoinedDate" type="date" class="form-control" value="@Model.JoinedDate?.ToString(DEFAULT_DATEONLY_FORMAT)" />
+            <span asp-validation-for="JoinedDate"></span>
+        </div>
+        <div class="col-3">
+            <label asp-for="TerminationDate" class="form-label"></label>
+            <input asp-for="TerminationDate" type="date" class="form-control" value="@Model.TerminationDate?.ToString(DEFAULT_DATEONLY_FORMAT)" />
+            <span asp-validation-for="TerminationDate"></span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <label asp-for="Note" class="form-label"></label>
+            <textarea asp-for="Note" class="form-control" rows="4">@Model.Note</textarea>
+            <span asp-validation-for="Note"></span>
         </div>
     </div>
 </form>

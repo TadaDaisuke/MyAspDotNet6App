@@ -9,4 +9,6 @@ public interface IMemberRepository
     public void SaveMember(Member member);
 
     public byte[] CreateExcelBytes(MemberSearchCondition searchCondition, string sheetName);
+
+    public IEnumerable<string> SuggestMemberCode(string memberCodePart);
 }

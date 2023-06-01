@@ -20,4 +20,7 @@ public class MemberService : IMemberService
 
     public byte[] DownloadMembers(MemberSearchCondition searchCondition)
         => _memberRepository.CreateExcelBytes(searchCondition, "Members");
+
+    public IEnumerable<string> SuggestMemberCode(string memberCodePart)
+        => _memberRepository.SuggestMemberCode(memberCodePart);
 }

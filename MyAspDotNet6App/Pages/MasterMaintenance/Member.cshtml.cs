@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MyAspDotNet6App.Domain;
+using MyAspDotNet6App.PageParts;
 
 namespace MyAspDotNet6App.Pages.MasterMaintenance;
 
@@ -10,6 +11,8 @@ public class MemberModel : PageModel
     private readonly IMemberService _memberService;
 
     public IEnumerable<SelectListItem> DepartmentListItems;
+
+    public IEnumerable<RadioItem> EmailDomains;
 
     [BindProperty]
     public MemberSearchCondition SearchCondition { get; set; } = new MemberSearchCondition();
@@ -20,6 +23,15 @@ public class MemberModel : PageModel
         DepartmentListItems = departmentService.GetAllDepartments()
             .Select(x => new SelectListItem { Value = x.DepartmentCode, Text = x.DepartmentName })
             .ToList();
+        EmailDomains = new List<RadioItem>
+        {
+            new RadioItem("None", "指定なし", "", true),
+            new RadioItem("Com", ".com", ".com"),
+            new RadioItem("Net", ".net", ".net"),
+            new RadioItem("Org", ".org", ".org"),
+            new RadioItem("CoJp", ".co.jp", ".co.jp"),
+            new RadioItem("NeJp", ".ne.jp", ".ne.jp"),
+        };
     }
 
     public void OnGet()
@@ -68,5 +80,12 @@ public class MemberModel : PageModel
         var bytes = _memberService.DownloadMembers(SearchCondition);
         Response.Headers.Add("X-download-file-name", $"Members_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
         return File(bytes, CONTENT_TYPE_XLSX);
+    }
+
+    public JsonResult OnPostSuggestMemberCode(string? memberCodePart)
+    {
+        ArgumentNullException.ThrowIfNull(memberCodePart);
+        var list = _memberService.SuggestMemberCode(memberCodePart);
+        return new JsonResult(list);
     }
 }

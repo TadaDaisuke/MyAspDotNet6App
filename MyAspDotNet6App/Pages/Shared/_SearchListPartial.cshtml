@@ -1,5 +1,5 @@
 ﻿@{
-    var cols = ViewData["ListColumns"] as List<Tuple<string, string?>>;
+    var cols = (ViewData["ListColumns"] as List<ListColumn>).OrEmptyIfNull();
     var hasModal = (ViewData["ModalTitle"] != null);
     var tableClass = "table mt-2";
     if (hasModal)
@@ -15,28 +15,31 @@
         <button id="clearButton" class="btn btn-primary ms-2">
             <i class="bi bi-eraser-fill"></i> クリア
         </button>
-        <button id="addNewButton" class="btn btn-primary ms-auto">
-            <i class="bi bi-plus-circle"></i> 新規登録
-        </button>
+        @if (hasModal)
+        {
+            <button id="addNewButton" class="btn btn-primary ms-auto">
+                <i class="bi bi-plus-circle"></i> 新規登録
+            </button>
+        }
     </div>
 </div>
-<table class="@tableClass">
+<table id="mainTable" class="@tableClass">
     <thead class="sticky-top bg-white">
         <tr class="border-bottom-0">
-            <td colspan="@cols?.Count" class="px-0 pb-0 border-bottom-0">
+            <td colspan="@cols.Count()" class="px-0 pb-0 border-bottom-0">
                 <div id="resultMessage" class="d-flex align-items-baseline"></div>
             </td>
         </tr>
         <tr id="tableHeader" class="d-none align-baseline">
             @foreach (var col in cols.OrEmptyIfNull())
             {
-                if (col.Item2 == null)
+                if (col.SortItem == null)
                 {
-                    <th>@col.Item1</th>
+                    <th>@col.Name</th>
                 }
                 else
                 {
-                    <th>@col.Item1 <button class="btn btn-sort" data-sort-item="@col.Item2"><i class="bi bi-arrow-down-up"></i></button></th>
+                    <th>@col.Name <button class="btn btn-sort" data-sort-item="@col.SortItem"><i class="bi bi-arrow-down-up"></i></button></th>
                 }
             }
         </tr>

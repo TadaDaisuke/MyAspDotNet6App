@@ -24,22 +24,25 @@ try
     });
     builder.Services.AddRazorPages();
 
-    builder.Services.AddTransient<UserNameEnricher>();
+    builder.Services.AddTransient<HttpContextEnricher>();
     builder.Services.AddHttpContextAccessor();
     builder.Host
         .UseSerilog((hostBuilderContext, serviceProvider, loggerConfiguration) =>
             loggerConfiguration
                 .Enrich.FromLogContext()
-                .Enrich.With(serviceProvider.GetService<UserNameEnricher>())
+                .Enrich.With(serviceProvider.GetService<HttpContextEnricher>())
                 .ReadFrom.Configuration(builder.Configuration));
 
     var context = new MyAppContext(builder.Configuration.GetConnectionString("MyDatabaseConnectionString"));
     builder.Services.AddSingleton(context);
-    builder.Services.AddSingleton<IExcelCreator, ExcelCreator>();
     builder.Services.AddSingleton<IDepartmentRepository, MssqlDepartmentRepository>();
     builder.Services.AddSingleton<IDepartmentService, DepartmentService>();
     builder.Services.AddSingleton<IMemberRepository, MssqlMemberRepository>();
     builder.Services.AddSingleton<IMemberService, MemberService>();
+
+    var excelSettings = builder.Configuration.GetSection("ExcelSettings").Get<ExcelSettings>();
+    builder.Services.AddSingleton(excelSettings);
+    builder.Services.AddSingleton<IExcelCreator, EpplusExcelCreator>();
 
     var app = builder.Build();
 

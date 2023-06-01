@@ -20,21 +20,20 @@ CREATE OR ALTER FUNCTION dbo.tvf_departments_sorted (
 RETURNS TABLE
 AS
 RETURN (
-        SELECT main.*
-            ,ROW_NUMBER() OVER (
+        SELECT ROW_NUMBER() OVER (
                 ORDER BY IIF(@sort_item = N'department_name' AND @sort_type = N'asc', main.department_name, NULL) ASC
                     ,IIF(@sort_item = N'department_name' AND @sort_type = N'desc', main.department_name, NULL) DESC
                     ,IIF(@sort_item = N'department_code' AND @sort_type = N'asc', main.department_code, NULL) ASC
                     ,IIF(@sort_item = N'department_code' AND @sort_type = N'desc', main.department_code, NULL) DESC
                 ) AS seq
+            ,main.department_code
+            ,main.department_name
             ,total.total_records_count
         FROM tvf_departments_filtered(@department_name_part) AS main
         CROSS JOIN (
             SELECT COUNT(*) AS total_records_count
             FROM tvf_departments_filtered(@department_name_part)
             ) AS total
-        WHERE @department_name_part IS NULL
-            OR department_name LIKE N'%' + @department_name_part + N'%'
         )
 GO
 

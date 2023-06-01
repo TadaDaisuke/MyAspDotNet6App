@@ -1,10 +1,10 @@
-﻿const form = document.querySelector("#searchConditionForm");
+﻿const searchConditionForm = document.querySelector("#searchConditionForm");
 const offsetRowsHidden = document.querySelector("input[name='SearchCondition.OffsetRows']");
 const sortItemHidden = document.querySelector("input[name='SearchCondition.SortItem']");
 const sortTypeHidden = document.querySelector("input[name='SearchCondition.SortType']");
 const searchButton = document.querySelector("#searchButton");
 const clearButton = document.querySelector("#clearButton");
-const table = document.querySelector("table");
+const mainTable = document.querySelector("#mainTable");
 const resultMessage = document.querySelector("#resultMessage");
 const tableHeader = document.querySelector("#tableHeader");
 const sortButtons = document.querySelectorAll(".btn-sort");
@@ -18,7 +18,7 @@ let searchParams;
 // 検索ボタンクリックイベント
 searchButton.addEventListener("click", () => search());
 // Enterキー押下イベント
-form.addEventListener("keydown", (e) => {
+searchConditionForm.addEventListener("keydown", (e) => {
     if (e.keyCode === 13) {
         search();
         e.preventDefault();
@@ -26,7 +26,7 @@ form.addEventListener("keydown", (e) => {
 });
 // クリアボタンクリックイベント
 clearButton.addEventListener("click", () => {
-    form.reset();
+    searchConditionForm.reset();
     sortItemHidden.value = "";
     sortTypeHidden.value = "";
     clearResult();
@@ -79,7 +79,7 @@ function clearResult() {
 // 検索開始
 function search() {
     clearResult();
-    searchParams = new URLSearchParams(new FormData(form));
+    searchParams = new URLSearchParams(new FormData(searchConditionForm));
     fetchResultRows();
 }
 // 検索実行と結果行のフェッチ
@@ -123,7 +123,7 @@ function fetchResultRows() {
 // Excelダウンロード
 function downloadExcel() {
     let downloadFileName;
-    fetch("?Handler=DownloadExcel", { method: "POST", body: new URLSearchParams(new FormData(form)) })
+    fetch("?Handler=DownloadExcel", { method: "POST", body: new URLSearchParams(new FormData(searchConditionForm)) })
         .then((response) => {
             if (!response.ok) {
                 throw new Error("ダウンロードに失敗しました");

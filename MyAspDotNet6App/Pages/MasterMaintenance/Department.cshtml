@@ -2,12 +2,15 @@
 @model MyAspDotNet6App.Pages.MasterMaintenance.DepartmentModel
 @{
     ViewData["Title"] = "部署マスター";
-    ViewData["BreadCrumbs"] = new List<Tuple<string, string>> { Tuple.Create("/Index", "Home") };
-    ViewData["ListColumns"] = new List<Tuple<string, string?>>
+    ViewData["BreadCrumbs"] = new List<BreadCrumbItem>
     {
-        Tuple.Create<string, string?>("Seq.", null),
-        Tuple.Create<string, string?>("部署コード", "department_code"),
-        Tuple.Create<string, string?>("部署名", "department_name"),
+        new BreadCrumbItem("/Index", "Home"),
+    };
+    ViewData["ListColumns"] = new List<ListColumn>
+    {
+        new ListColumn("Seq."),
+        new ListColumn("部署コード", "department_code"),
+        new ListColumn("部署名", "department_name"),
     };
     ViewData["ModalTitle"] = "部署詳細";
 }

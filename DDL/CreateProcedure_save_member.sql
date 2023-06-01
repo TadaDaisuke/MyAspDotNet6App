@@ -10,8 +10,10 @@ CREATE OR ALTER PROCEDURE dbo.sp_save_member (
     ,@given_name_kanji NVARCHAR(128)
     ,@family_name_kanji NVARCHAR(128)
     ,@mail_address NVARCHAR(256)
-    ,@joined_date DATE
     ,@department_code NVARCHAR(6)
+    ,@joined_date DATE
+    ,@termination_date DATE
+    ,@note NVARCHAR(4000)
     ,@error_message NVARCHAR(4000) OUTPUT
     )
 AS
@@ -29,9 +31,11 @@ BEGIN
                 ,@given_name_kanji
                 ,@family_name_kanji
                 ,@mail_address
-                ,@joined_date
                 ,@department_code
-            ) AS src(member_code, given_name, family_name, given_name_kana, family_name_kana, given_name_kanji, family_name_kanji, mail_address, joined_date, department_code)
+                ,@joined_date
+                ,@termination_date
+                ,@note
+            ) AS src(member_code, given_name, family_name, given_name_kana, family_name_kana, given_name_kanji, family_name_kanji, mail_address, department_code, joined_date, termination_date, note)
             ON (member.member_code = src.member_code)
         WHEN MATCHED
             THEN
@@ -43,8 +47,10 @@ BEGIN
                     ,given_name_kanji = src.given_name_kanji
                     ,family_name_kanji = src.family_name_kanji
                     ,mail_address = src.mail_address
-                    ,joined_date = src.joined_date
                     ,department_code = src.department_code
+                    ,joined_date = src.joined_date
+                    ,termination_date = src.termination_date
+                    ,note = src.note
         WHEN NOT MATCHED
             THEN
                 INSERT (
@@ -56,8 +62,10 @@ BEGIN
                     ,given_name_kanji
                     ,family_name_kanji
                     ,mail_address
-                    ,joined_date
                     ,department_code
+                    ,joined_date
+                    ,termination_date
+                    ,note
                     )
                 VALUES (
                     (
@@ -71,8 +79,10 @@ BEGIN
                     ,src.given_name_kanji
                     ,src.family_name_kanji
                     ,src.mail_address
-                    ,src.joined_date
                     ,src.department_code
+                    ,src.joined_date
+                    ,src.termination_date
+                    ,src.note
                     );
 
         COMMIT TRANSACTION

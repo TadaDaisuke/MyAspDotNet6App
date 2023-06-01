@@ -86,3 +86,11 @@ form .form-label {
     font-size: 0.75rem;
     color: var(--bs-danger);
 }
+
+.ui-autocomplete {
+    z-index: 2000;
+}
+
+    .ui-autocomplete .ui-menu-item-wrapper {
+        font-size: 0.9rem;
+    }

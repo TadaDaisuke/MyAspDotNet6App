@@ -10,6 +10,9 @@ public static class ExtensionMethods
     public static int ToInt(this string? s, int defaultValue = 0)
         => int.TryParse(s, out int i) ? i : defaultValue;
 
+    public static float ToFloat(this string? s, float defaultValue = 0.0F)
+        => float.TryParse(s, out float f) ? f : defaultValue;
+
     public static int? ToNullableInt(this string? s)
         => int.TryParse(s, out int i) ? i : null;
 

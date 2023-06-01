@@ -44,10 +44,6 @@ public class Member
     [EmailAddress(ErrorMessage = "正しいメールアドレスを入力してください")]
     public string? MailAddress { get; set; }
 
-    [Display(Name = "着任日")]
-    [Required(AllowEmptyStrings = false, ErrorMessage = "着任日は入力必須です")]
-    public DateTime? JoinedDate { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
-
     [Display(Name = "所属部署")]
     [Required(AllowEmptyStrings = false, ErrorMessage = "所属部署は選択必須です")]
     public string? DepartmentCode { get; set; }
@@ -55,6 +51,16 @@ public class Member
     public string? DepartmentName { get; set; }
 
     public IEnumerable<SelectListItem>? DepartmentListItems { get; set; }
+
+    [Display(Name = "着任日")]
+    [Required(AllowEmptyStrings = false, ErrorMessage = "着任日は入力必須です")]
+    public DateTime? JoinedDate { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
+
+    [Display(Name = "離任日")]
+    public DateTime? TerminationDate { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
+
+    [Display(Name = "備考")]
+    public string? Note { get; set; }
 
     public string FullName => $"{GivenName} {FamilyName}";
 

@@ -13,6 +13,9 @@ public class MemberSearchCondition
     [Display(Name = "氏名の一部")]
     public string? MemberNamePart { get; set; }
 
+    [Display(Name = "メンバーコード")]
+    public string? MemberCode { get; set; }
+
     [Display(Name = "着任日 From")]
     public DateTime? JoinedDateFrom { get; set; } // ASP.NET6ではまだBindPropertyにDateOnly型は使えない
 
@@ -21,4 +24,10 @@ public class MemberSearchCondition
 
     [Display(Name = "所属部署")]
     public string? DepartmentCode { get; set; }
+
+    [Display(Name = "離任者を含む")]
+    public bool HasTerminatedMembers { get; set; } = true;
+
+    [Display(Name = "メールアドレスのドメイン")]
+    public string? EmailDomain { get; set; }
 }

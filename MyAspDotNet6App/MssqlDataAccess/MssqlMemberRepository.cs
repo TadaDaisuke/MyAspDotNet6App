@@ -20,9 +20,12 @@ public class MssqlMemberRepository : IMemberRepository
     {
         var cmd = new SqlCommand("sp_search_members") { CommandType = CommandType.StoredProcedure }
             .AddParameter("@member_name_part", SqlDbType.NVarChar, searchCondition.MemberNamePart)
+            .AddParameter("@member_code", SqlDbType.NVarChar, searchCondition.MemberCode)
             .AddParameter("@joined_date_from", SqlDbType.Date, searchCondition.JoinedDateFrom)
             .AddParameter("@joined_date_to", SqlDbType.Date, searchCondition.JoinedDateTo)
             .AddParameter("@department_code", SqlDbType.NVarChar, searchCondition.DepartmentCode.OrNullIfWhiteSpace())
+            .AddParameter("@has_terminated_members", SqlDbType.Bit, searchCondition.HasTerminatedMembers)
+            .AddParameter("@email_domain", SqlDbType.NVarChar, searchCondition.EmailDomain)
             .AddParameter("@sort_item", SqlDbType.NVarChar, searchCondition.SortItem)
             .AddParameter("@sort_type", SqlDbType.NVarChar, searchCondition.SortType)
             .AddParameter("@offset_rows", SqlDbType.Int, searchCondition.OffsetRows)
@@ -58,6 +61,7 @@ public class MssqlMemberRepository : IMemberRepository
             FamilyNameKana = row["family_name_kana"],
             MailAddress = row["mail_address"],
             JoinedDate = row["joined_date"].ToNullableDateTime(DEFAULT_DATEONLY_FORMAT),
+            TerminationDate = row["termination_date"].ToNullableDateTime(DEFAULT_DATEONLY_FORMAT),
         };
         if (row.ContainsKey("department_code"))
         {
@@ -66,6 +70,10 @@ public class MssqlMemberRepository : IMemberRepository
         if (row.ContainsKey("department_name"))
         {
             member.DepartmentName = row["department_name"];
+        }
+        if (row.ContainsKey("note"))
+        {
+            member.Note = row["note"];
         }
         return member;
     }
@@ -81,8 +89,10 @@ public class MssqlMemberRepository : IMemberRepository
             .AddParameter("@given_name_kanji", SqlDbType.NVarChar, member.GivenNameKanji)
             .AddParameter("@family_name_kanji", SqlDbType.NVarChar, member.FamilyNameKanji)
             .AddParameter("@mail_address", SqlDbType.NVarChar, member.MailAddress)
-            .AddParameter("@joined_date", SqlDbType.Date, member.JoinedDate)
             .AddParameter("@department_code", SqlDbType.NVarChar, member.DepartmentCode)
+            .AddParameter("@joined_date", SqlDbType.Date, member.JoinedDate)
+            .AddParameter("@termination_date", SqlDbType.Date, member.TerminationDate)
+            .AddParameter("@note", SqlDbType.NVarChar, member.Note)
             .AddOutputParameter("@error_message", SqlDbType.NVarChar, 4000);
         var errorMessage = _context.ExecuteSql(cmd).Parameters["@error_message"].Value.ToString();
         if (!string.IsNullOrWhiteSpace(errorMessage))
@@ -95,11 +105,21 @@ public class MssqlMemberRepository : IMemberRepository
     {
         var cmd = new SqlCommand("sp_download_members") { CommandType = CommandType.StoredProcedure }
             .AddParameter("@member_name_part", SqlDbType.NVarChar, searchCondition.MemberNamePart)
+            .AddParameter("@member_code", SqlDbType.NVarChar, searchCondition.MemberCode)
             .AddParameter("@joined_date_from", SqlDbType.Date, searchCondition.JoinedDateFrom)
             .AddParameter("@joined_date_to", SqlDbType.Date, searchCondition.JoinedDateTo)
             .AddParameter("@department_code", SqlDbType.NVarChar, searchCondition.DepartmentCode.OrNullIfWhiteSpace())
+            .AddParameter("@has_terminated_members", SqlDbType.Bit, searchCondition.HasTerminatedMembers)
+            .AddParameter("@email_domain", SqlDbType.NVarChar, searchCondition.EmailDomain)
             .AddParameter("@sort_item", SqlDbType.NVarChar, searchCondition.SortItem)
             .AddParameter("@sort_type", SqlDbType.NVarChar, searchCondition.SortType);
         return _excelCreator.CreateFileBytes(cmd, sheetName);
+    }
+
+    public IEnumerable<string> SuggestMemberCode(string memberCodePart)
+    {
+        var cmd = new SqlCommand("sp_suggest_member_code") { CommandType = CommandType.StoredProcedure }
+            .AddParameter("@member_code_part", SqlDbType.NVarChar, memberCodePart);
+        return _context.GetRowList(cmd).Select(row => row["member_code"] ?? string.Empty).ToList();
     }
 }

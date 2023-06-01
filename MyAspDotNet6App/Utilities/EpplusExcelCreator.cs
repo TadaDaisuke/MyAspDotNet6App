@@ -6,13 +6,15 @@ using System.Drawing;
 
 namespace MyAspDotNet6App.Utilities;
 
-public class ExcelCreator : IExcelCreator
+public class EpplusExcelCreator : IExcelCreator
 {
     private readonly MyAppContext _context;
+    private readonly ExcelSettings _excelSettings;
 
-    public ExcelCreator(MyAppContext context)
+    public EpplusExcelCreator(MyAppContext context, ExcelSettings excelSettings)
     {
         _context = context;
+        _excelSettings = excelSettings;
     }
 
     public byte[] CreateFileBytes(SqlCommand cmd, string sheetName)
@@ -34,7 +36,7 @@ public class ExcelCreator : IExcelCreator
     {
         const int MAX_ROW = 1048575;
         // シートの生成
-        var sheet = AddWorkSheet(package.Workbook, sheetName);
+        var sheet = AddWorksheet(package.Workbook, sheetName);
         // クエリの実行
         List<Dictionary<string, string?>> rowList;
         DataTable schemaTable;
@@ -64,7 +66,7 @@ public class ExcelCreator : IExcelCreator
             if (currentRow > MAX_ROW + 1)
             {
                 AdjustSheet(sheet, schemaTable);
-                sheet = AddWorkSheet(package.Workbook);
+                sheet = AddWorksheet(package.Workbook);
                 currentRow = 2;
             }
             if (currentRow == 2)
@@ -199,7 +201,7 @@ public class ExcelCreator : IExcelCreator
     /// <param name="workbook">ExcelWorkbookオブジェクト</param>
     /// <param name="sheetName">シート名（省略可）</param>
     /// <returns>追加されたExcelWorksheetオブジェクト</returns>
-    private static ExcelWorksheet AddWorkSheet(ExcelWorkbook workbook, string? sheetName = null)
+    private ExcelWorksheet AddWorksheet(ExcelWorkbook workbook, string? sheetName = null)
     {
         var newSheetName = string.IsNullOrWhiteSpace(sheetName)
             ? "Sheet1"
@@ -215,13 +217,13 @@ public class ExcelCreator : IExcelCreator
             else
             {
                 var sheet = workbook.Worksheets.Add(newSheetName);
-                var fontName = "Yu Gothic UI";
-                var fontSize = 10F;
+                var fontName = _excelSettings.FontName;
+                var fontSize = _excelSettings.FontSize.ToFloat(10F);
                 sheet.Cells.Style.Font.SetFromFont(new Font(fontName, fontSize));
                 return sheet;
             }
         }
-        return workbook.Worksheets.Add(Guid.NewGuid().ToString());
+        return workbook.Worksheets.Add(DateTime.Now.ToString("yyyyMMddHHmmssfff"));
     }
 
     /// <summary>
@@ -229,14 +231,14 @@ public class ExcelCreator : IExcelCreator
     /// </summary>
     /// <param name="sheet">ExcelWorksheetオブジェクト</param>
     /// <param name="schemaTable">列情報のDataTable</param>
-    private static void AdjustSheet(ExcelWorksheet sheet, DataTable schemaTable)
+    private void AdjustSheet(ExcelWorksheet sheet, DataTable schemaTable)
     {
         sheet.View.FreezePanes(2, 1);
         for (var columnIndex = 1; columnIndex <= schemaTable.Rows.Count; columnIndex++)
         {
             if (schemaTable.Rows[columnIndex - 1].Field<string>("DataTypeName") == "bit")
             {
-                var fontSize = 10F;
+                var fontSize = _excelSettings.FontSize.ToFloat(10F);
                 sheet.Column(columnIndex).Width = 0.7 * fontSize;
             }
             else
