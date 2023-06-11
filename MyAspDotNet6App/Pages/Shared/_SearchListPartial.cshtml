@@ -31,7 +31,7 @@
             </td>
         </tr>
         <tr id="tableHeader" class="d-none align-baseline">
-            @foreach (var col in cols.OrEmptyIfNull())
+            @foreach (var col in cols)
             {
                 if (col.SortItem == null)
                 {

@@ -49,7 +49,7 @@ RETURN (
                 )
             AND (
                 @email_domain IS NULL
-                OR mail_address LIKE N'%' + @email_domain + N'%'
+                OR mail_address LIKE N'%' + @email_domain
                 )
         )
 GO

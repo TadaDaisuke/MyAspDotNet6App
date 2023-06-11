@@ -50,9 +50,7 @@
                 <label asp-for="SearchCondition.HasTerminatedMembers" class="form-check-label"></label>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col">
+        <div class="col-6">
             <label asp-for="SearchCondition.EmailDomain" class="form-label"></label><br />
             @foreach (var (radioItem, index) in Model.EmailDomains.Select((v, i) => (v, i)))
             {

@@ -14,6 +14,7 @@ public class MemberSearchCondition
     public string? MemberNamePart { get; set; }
 
     [Display(Name = "メンバーコード")]
+    [StringLength(8)]
     public string? MemberCode { get; set; }
 
     [Display(Name = "着任日 From")]
