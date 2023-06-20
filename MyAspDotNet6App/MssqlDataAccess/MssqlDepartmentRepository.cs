@@ -5,17 +5,33 @@ using System.Data;
 
 namespace MyAspDotNet6App.MssqlDataAccess;
 
+/// <summary>
+/// 部署リポジトリー実装クラス
+/// </summary>
 public class MssqlDepartmentRepository : IDepartmentRepository
 {
-    private readonly MyAppContext _context;
+    /// <summary>
+    /// MyDatabaseアクセス関連のコンテキスト
+    /// </summary>
+    private readonly MyDatabaseContext _context;
+
+    /// <summary>
+    /// Excel生成ユーティリティー
+    /// </summary>
     private readonly IExcelCreator _excelCreator;
 
-    public MssqlDepartmentRepository(MyAppContext context, IExcelCreator excelCreator)
+    /// <summary>
+    /// コンストラクター
+    /// </summary>
+    /// <param name="context">MyDatabaseアクセス関連のコンテキスト</param>
+    /// <param name="excelCreator">Excel生成ユーティリティー</param>
+    public MssqlDepartmentRepository(MyDatabaseContext context, IExcelCreator excelCreator)
     {
         _context = context;
         _excelCreator = excelCreator;
     }
 
+    /// <inheritdoc/>
     public IEnumerable<DepartmentListRow> SearchDepartments(DepartmentSearchCondition searchCondition)
     {
         var cmd = new SqlCommand("sp_search_departments") { CommandType = CommandType.StoredProcedure }
@@ -33,6 +49,7 @@ public class MssqlDepartmentRepository : IDepartmentRepository
             .ToList();
     }
 
+    /// <inheritdoc/>
     public IEnumerable<Department> GetAllDepartments()
     {
         var cmd = new SqlCommand("sp_search_departments") { CommandType = CommandType.StoredProcedure }
@@ -46,6 +63,7 @@ public class MssqlDepartmentRepository : IDepartmentRepository
             .ToList();
     }
 
+    /// <inheritdoc/>
     public Department? GetDepartment(string departmentCode)
     {
         var cmd = new SqlCommand("sp_get_department") { CommandType = CommandType.StoredProcedure }
@@ -55,6 +73,7 @@ public class MssqlDepartmentRepository : IDepartmentRepository
             .FirstOrDefault();
     }
 
+    /// <inheritdoc/>
     public void SaveDepartment(Department department)
     {
         var cmd = new SqlCommand("sp_save_department") { CommandType = CommandType.StoredProcedure }
@@ -68,6 +87,7 @@ public class MssqlDepartmentRepository : IDepartmentRepository
         }
     }
 
+    /// <inheritdoc/>
     public byte[] CreateExcelBytes(DepartmentSearchCondition searchCondition, string sheetName)
     {
         var cmd = new SqlCommand("sp_download_departments") { CommandType = CommandType.StoredProcedure }

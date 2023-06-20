@@ -3,15 +3,26 @@ using Serilog.Events;
 
 namespace MyAspDotNet6App.Logging;
 
+/// <summary>
+/// HttpContext情報出力用のSerilogカスタムエンリッチャー
+/// </summary>
 public class HttpContextEnricher : ILogEventEnricher
 {
+    /// <summary>
+    /// HttpContextアクセス用クラス
+    /// </summary>
     private readonly IHttpContextAccessor _httpContextAccessor;
 
+    /// <summary>
+    /// コンストラクター
+    /// </summary>
+    /// <param name="httpContextAccessor">HttpContextアクセス用クラス</param>
     public HttpContextEnricher(IHttpContextAccessor httpContextAccessor)
     {
         _httpContextAccessor = httpContextAccessor;
     }
 
+    /// <inheritdoc/>
     public void Enrich(LogEvent logEvent, ILogEventPropertyFactory factory)
     {
         if (!(_httpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false))

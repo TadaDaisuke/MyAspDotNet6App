@@ -20,7 +20,7 @@
     };
     ViewData["ModalTitle"] = "メンバー詳細";
 }
-<form id="searchConditionForm">
+<form id="searchConditionForm" asp-antiforgery="true">
     <div class="row">
         <div class="col-3">
             <label asp-for="SearchCondition.MemberNamePart" class="form-label"></label>
@@ -64,7 +64,6 @@
     <input asp-for="SearchCondition.OffsetRows" type="hidden" value="0" />
     <input asp-for="SearchCondition.SortItem" type="hidden" />
     <input asp-for="SearchCondition.SortType" type="hidden" />
-    @Html.AntiForgeryToken()
 </form>
 
 <partial name="_SearchListPartial" />

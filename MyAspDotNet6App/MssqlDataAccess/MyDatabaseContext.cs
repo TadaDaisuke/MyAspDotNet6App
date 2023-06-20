@@ -6,17 +6,35 @@ using System.Text;
 
 namespace MyAspDotNet6App.MssqlDataAccess;
 
-public class MyAppContext
+/// <summary>
+/// MyDatabaseアクセス関連のコンテキスト
+/// </summary>
+public class MyDatabaseContext
 {
+    /// <summary>
+    /// DB接続文字列
+    /// </summary>
     private readonly string _connectionString;
 
+    /// <summary>
+    /// 一覧検索の1回あたり読込み行数
+    /// </summary>
     public readonly int FETCH_ROW_SIZE = 50;
 
-    public MyAppContext(string connectionString)
+    /// <summary>
+    /// コンストラクター
+    /// </summary>
+    /// <param name="connectionString">DB接続文字列</param>
+    public MyDatabaseContext(string connectionString)
     {
         _connectionString = connectionString;
     }
 
+    /// <summary>
+    /// SELECT文（SqlCommand）の実行結果をDictionaryのList形式で返すとともに、カラム情報を出力する。
+    /// </summary>
+    /// <param name="cmd">SqlCommandオブジェクト</param>
+    /// <param name="schemaTable">カラム情報出力用DataTable</param>
     public List<Dictionary<string, string?>> GetRowList(SqlCommand cmd, out DataTable schemaTable)
     {
         var list = new List<Dictionary<string, string?>>();
@@ -55,8 +73,17 @@ public class MyAppContext
         return list;
     }
 
+    /// <summary>
+    /// SELECT文（SqlCommand）の実行結果をDictionaryのList形式で返す。
+    /// </summary>
+    /// <param name="cmd">SqlCommandオブジェクト</param>
     public List<Dictionary<string, string?>> GetRowList(SqlCommand cmd) => GetRowList(cmd, out _);
 
+    /// <summary>
+    /// SQL（SqlCommand）を実行する。
+    /// </summary>
+    /// <param name="cmd">SqlCommandオブジェクト</param>
+    /// <returns>SqlCommand自身への参照</returns>
     public SqlCommand ExecuteSql(SqlCommand cmd)
     {
         var callerMethod = new StackFrame(1)?.GetMethod();
@@ -74,6 +101,10 @@ public class MyAppContext
         return cmd;
     }
 
+    /// <summary>
+    /// SqlCommandオブジェクトのログ出力用文字列（CommandText/CommandType/Parameters）を返す。
+    /// </summary>
+    /// <param name="cmd">SqlCommandオブジェクト</param>
     private static string GetCommandLogString(SqlCommand cmd)
     {
         var sb = new StringBuilder()

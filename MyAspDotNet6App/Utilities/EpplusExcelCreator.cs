@@ -6,17 +6,33 @@ using System.Drawing;
 
 namespace MyAspDotNet6App.Utilities;
 
+/// <summary>
+/// EPPlus を使用した、Excel生成ユーティリティー実装クラス
+/// </summary>
 public class EpplusExcelCreator : IExcelCreator
 {
-    private readonly MyAppContext _context;
+    /// <summary>
+    /// MyDatabaseアクセス関連のコンテキスト
+    /// </summary>
+    private readonly MyDatabaseContext _context;
+    
+    /// <summary>
+    /// Excel出力用設定
+    /// </summary>
     private readonly ExcelSettings _excelSettings;
 
-    public EpplusExcelCreator(MyAppContext context, ExcelSettings excelSettings)
+    /// <summary>
+    /// コンストラクター
+    /// </summary>
+    /// <param name="context">MyDatabaseアクセス関連のコンテキスト</param>
+    /// <param name="excelSettings">Excel出力用設定</param>
+    public EpplusExcelCreator(MyDatabaseContext context, ExcelSettings excelSettings)
     {
         _context = context;
         _excelSettings = excelSettings;
     }
 
+    /// <inheritdoc/>
     public byte[] CreateFileBytes(SqlCommand cmd, string sheetName)
     {
         byte[] bytes;
@@ -32,6 +48,12 @@ public class EpplusExcelCreator : IExcelCreator
         return bytes;
     }
 
+    /// <summary>
+    /// SELECT文（SqlCommand）の実行結果をワークシートに出力する
+    /// </summary>
+    /// <param name="package">ExcelPackageオブジェクト</param>
+    /// <param name="cmd">SqlCommandオブジェクト</param>
+    /// <param name="sheetName">ワークシート名</param>
     private void OutputExcelSheet(ExcelPackage package, SqlCommand cmd, string sheetName)
     {
         const int MAX_ROW = 1048575;

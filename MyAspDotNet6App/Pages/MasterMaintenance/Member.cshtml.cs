@@ -6,17 +6,37 @@ using MyAspDotNet6App.PageParts;
 
 namespace MyAspDotNet6App.Pages.MasterMaintenance;
 
+/// <summary>
+/// Memberページモデル
+/// </summary>
 public class MemberModel : PageModel
 {
+    /// <summary>
+    /// メンバーサービス
+    /// </summary>
     private readonly IMemberService _memberService;
 
-    public IEnumerable<SelectListItem> DepartmentListItems;
+    /// <summary>
+    /// 部署ドロップダウンリストアイテムのコレクション
+    /// </summary>
+    public IEnumerable<SelectListItem> DepartmentListItems { get; private set; }
 
-    public IEnumerable<RadioItem> EmailDomains;
+    /// <summary>
+    /// 電子メールドメインラジオボタンアイテムのコレクション
+    /// </summary>
+    public IEnumerable<RadioItem> EmailDomains { get; private set; }
 
+    /// <summary>
+    /// メンバー検索条件
+    /// </summary>
     [BindProperty]
     public MemberSearchCondition SearchCondition { get; set; } = new MemberSearchCondition();
 
+    /// <summary>
+    /// コンストラクター
+    /// </summary>
+    /// <param name="memberService">メンバーサービス</param>
+    /// <param name="departmentService">部署サービス</param>
     public MemberModel(IMemberService memberService, IDepartmentService departmentService)
     {
         _memberService = memberService;
@@ -34,10 +54,16 @@ public class MemberModel : PageModel
         };
     }
 
+    /// <summary>
+    /// GETリクエストハンドラー
+    /// </summary>
     public void OnGet()
     {
     }
 
+    /// <summary>
+    /// Search（POST）リクエストハンドラー
+    /// </summary>
     public PartialViewResult OnPostSearch()
     {
         var members = _memberService.SearchMembers(SearchCondition);
@@ -46,6 +72,9 @@ public class MemberModel : PageModel
         return Partial("MemberList", members);
     }
 
+    /// <summary>
+    /// GetDetail（POST）リクエストハンドラー
+    /// </summary>
     public PartialViewResult OnPostGetDetail([FromForm] string? detailKey)
     {
         ArgumentNullException.ThrowIfNull(detailKey);
@@ -54,6 +83,9 @@ public class MemberModel : PageModel
         return Partial("MemberDetail", member);
     }
 
+    /// <summary>
+    /// GetBlankDetail（POST）リクエストハンドラー
+    /// </summary>
     public PartialViewResult OnPostGetBlankDetail()
     {
         var member = new Member
@@ -64,6 +96,9 @@ public class MemberModel : PageModel
         return Partial("MemberDetail", member);
     }
 
+    /// <summary>
+    /// SaveDetail（POST）リクエストハンドラー
+    /// </summary>
     public ContentResult OnPostSaveDetail([FromForm] Member? member)
     {
         ArgumentNullException.ThrowIfNull(member);
@@ -75,6 +110,9 @@ public class MemberModel : PageModel
         return Content("更新しました");
     }
 
+    /// <summary>
+    /// DownloadExcel（POST）リクエストハンドラー
+    /// </summary>
     public FileContentResult OnPostDownloadExcel()
     {
         var bytes = _memberService.DownloadMembers(SearchCondition);

@@ -5,17 +5,33 @@ using System.Data;
 
 namespace MyAspDotNet6App.MssqlDataAccess;
 
+/// <summary>
+/// メンバーリポジトリー実装クラス
+/// </summary>
 public class MssqlMemberRepository : IMemberRepository
 {
-    private readonly MyAppContext _context;
+    /// <summary>
+    /// MyDatabaseアクセス関連のコンテキスト
+    /// </summary>
+    private readonly MyDatabaseContext _context;
+
+    /// <summary>
+    /// Excel生成ユーティリティー
+    /// </summary>
     private readonly IExcelCreator _excelCreator;
 
-    public MssqlMemberRepository(MyAppContext context, IExcelCreator excelCreator)
+    /// <summary>
+    /// コンストラクター
+    /// </summary>
+    /// <param name="context">MyDatabaseアクセス関連のコンテキスト</param>
+    /// <param name="excelCreator">Excel生成ユーティリティー</param>
+    public MssqlMemberRepository(MyDatabaseContext context, IExcelCreator excelCreator)
     {
         _context = context;
         _excelCreator = excelCreator;
     }
 
+    /// <inheritdoc/>
     public IEnumerable<MemberListRow> SearchMembers(MemberSearchCondition searchCondition)
     {
         var cmd = new SqlCommand("sp_search_members") { CommandType = CommandType.StoredProcedure }
@@ -39,6 +55,7 @@ public class MssqlMemberRepository : IMemberRepository
             .ToList();
     }
 
+    /// <inheritdoc/>
     public Member? GetMember(string memberCode)
     {
         var cmd = new SqlCommand("sp_get_member") { CommandType = CommandType.StoredProcedure }
@@ -48,6 +65,9 @@ public class MssqlMemberRepository : IMemberRepository
             .FirstOrDefault();
     }
 
+    /// <summary>
+    /// 検索結果1行から、Memberオブジェクトを生成して返す。
+    /// </summary>
     private static Member CreateMember(Dictionary<string, string?> row)
     {
         var member = new Member()
@@ -78,6 +98,7 @@ public class MssqlMemberRepository : IMemberRepository
         return member;
     }
 
+    /// <inheritdoc/>
     public void SaveMember(Member member)
     {
         var cmd = new SqlCommand("sp_save_member") { CommandType = CommandType.StoredProcedure }
@@ -101,6 +122,7 @@ public class MssqlMemberRepository : IMemberRepository
         }
     }
 
+    /// <inheritdoc/>
     public byte[] CreateExcelBytes(MemberSearchCondition searchCondition, string sheetName)
     {
         var cmd = new SqlCommand("sp_download_members") { CommandType = CommandType.StoredProcedure }
@@ -116,6 +138,7 @@ public class MssqlMemberRepository : IMemberRepository
         return _excelCreator.CreateFileBytes(cmd, sheetName);
     }
 
+    /// <inheritdoc/>
     public IEnumerable<string> SuggestMemberCode(string memberCodePart)
     {
         var cmd = new SqlCommand("sp_suggest_member_code") { CommandType = CommandType.StoredProcedure }
