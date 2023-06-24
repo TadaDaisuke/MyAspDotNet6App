@@ -25,7 +25,7 @@ public class RadioItem
     /// </summary>
     /// <param name="label">ラベル</param>
     /// <param name="value">値</param>
-    /// <param name="isChecked">[オプション] true: チェックあり, false: チェックなし（規定値 = false）。</param>
+    /// <param name="isChecked">[オプション] true: チェックあり, false: チェックなし（既定値 = false）。</param>
     public RadioItem(string label, string value, bool isChecked = false)
     {
         Label = label;

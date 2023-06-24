@@ -120,6 +120,11 @@ public class MemberModel : PageModel
         return File(bytes, CONTENT_TYPE_XLSX);
     }
 
+    /// <summary>
+    /// SuggestMemberCode（POST）リクエストハンドラー
+    /// </summary>
+    /// <param name="memberCodePart"></param>
+    /// <returns></returns>
     public JsonResult OnPostSuggestMemberCode(string? memberCodePart)
     {
         ArgumentNullException.ThrowIfNull(memberCodePart);

@@ -16,14 +16,14 @@ public static class ExtensionMethods
     /// <summary>
     /// stringをintに変換した値を返す。
     /// </summary>
-    /// <param name="defaultValue">[オプション] 変換できなかった場合に返す値（規定値 = 0）。</param>
+    /// <param name="defaultValue">[オプション] 変換できなかった場合に返す値（既定値 = 0）。</param>
     public static int ToInt(this string? s, int defaultValue = 0)
         => int.TryParse(s, out int i) ? i : defaultValue;
 
     /// <summary>
     /// stringをfloatに変換した値を返す。
     /// </summary>
-    /// <param name="defaultValue">[オプション] 変換できなかった場合に返す値（規定値 = 0.0F）。</param>
+    /// <param name="defaultValue">[オプション] 変換できなかった場合に返す値（既定値 = 0.0F）。</param>
     public static float ToFloat(this string? s, float defaultValue = 0.0F)
         => float.TryParse(s, out float f) ? f : defaultValue;
 
@@ -36,14 +36,14 @@ public static class ExtensionMethods
     /// <summary>
     /// stringをDateOnly（null許容型）に変換した値を返す。変換できなかった場合はnullを返す。
     /// </summary>
-    /// <param name="format">[オプション] 日付書式文字列（規定値 = "yyyy-MM-dd"）。</param>
+    /// <param name="format">[オプション] 日付書式文字列（既定値 = "yyyy-MM-dd"）。</param>
     public static DateOnly? ToNullableDateOnly(this string? s, string? format = null)
         => DateOnly.TryParseExact(s, format ?? DEFAULT_DATEONLY_FORMAT, null, DateTimeStyles.None, out DateOnly d) ? d : null;
 
     /// <summary>
     /// stringをDateTime（null許容型）に変換した値を返す。変換できなかった場合はnullを返す。
     /// </summary>
-    /// <param name="format">[オプション] 日付時刻書式文字列（規定値 = "yyyy-MM-dd HH:mm:ss.fff"）。</param>
+    /// <param name="format">[オプション] 日付時刻書式文字列（既定値 = "yyyy-MM-dd HH:mm:ss.fff"）。</param>
     public static DateTime? ToNullableDateTime(this string? s, string? format = null)
         => DateTime.TryParseExact(s, format ?? DEFAULT_DATETIME_FORMAT, null, DateTimeStyles.None, out DateTime d) ? d : null;
 
