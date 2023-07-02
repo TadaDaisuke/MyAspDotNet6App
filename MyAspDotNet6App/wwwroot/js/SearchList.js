@@ -89,8 +89,10 @@ function fetchResultRows() {
     searchParams.set("SearchCondition.OffsetRows", offsetRowsHidden.value);
     fetch("?Handler=Search", { method: "POST", body: searchParams })
         .then((response) => {
-            if (!response.ok) {
-                throw new Error("読み込みに失敗しました");
+            if (response.status === 400) {
+                throw new Error("一定時間操作がなかったため、タイムアウトしました。ページをリロードしてください。");
+            } else if (!response.ok) {
+                throw new Error("読み込みに失敗しました。");
             }
             totalRecordsCount = parseInt(response.headers.get("X-total-records-count"), 10);
             if (offsetRowsHidden.value == 0 || 0 < totalRecordsCount) {
@@ -113,7 +115,7 @@ function fetchResultRows() {
             tableBody.insertAdjacentHTML("beforeend", text);
         })
         .catch((error) => {
-            resultMessage.innerHTML = error;
+            resultMessage.innerHTML = `<span class='text-danger'><i class='bi bi-exclamation-circle-fill'></i> ${error.message}</span>`;
         })
         .finally(() => {
             tableLoading.classList.add("d-none");

@@ -123,8 +123,6 @@ public class MemberModel : PageModel
     /// <summary>
     /// SuggestMemberCode（POST）リクエストハンドラー
     /// </summary>
-    /// <param name="memberCodePart"></param>
-    /// <returns></returns>
     public JsonResult OnPostSuggestMemberCode(string? memberCodePart)
     {
         ArgumentNullException.ThrowIfNull(memberCodePart);
