@@ -5,9 +5,6 @@
 }
 <div class="row">
     <div class="col">
-        @{
-            var alertPartialViewModel = new AlertPartialViewModel(AlertType.Danger, "予期しないエラーが発生しました。");
-        }
-        <partial name="_AlertPartial" model="alertPartialViewModel" />
+        <partial name="_AlertPartial" model="@(new AlertPartialViewModel(AlertType.Danger, "予期しないエラーが発生しました。"))" />
     </div>
 </div>
