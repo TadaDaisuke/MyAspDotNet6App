@@ -32,11 +32,11 @@
         </div>
         <div class="col-3">
             <label asp-for="SearchCondition.JoinedDateFrom" class="form-label"></label>
-            <input asp-for="SearchCondition.JoinedDateFrom" type="date" class="form-control" />
+            <input asp-for="SearchCondition.JoinedDateFrom" type="date" max="9999-12-31" class="form-control" />
         </div>
         <div class="col-3">
             <label asp-for="SearchCondition.JoinedDateTo" class="form-label"></label>
-            <input asp-for="SearchCondition.JoinedDateTo" type="date" class="form-control" />
+            <input asp-for="SearchCondition.JoinedDateTo" type="date" max="9999-12-31" class="form-control" />
         </div>
         <div class="col-3">
             <label asp-for="SearchCondition.DepartmentCode" class="form-label"></label>

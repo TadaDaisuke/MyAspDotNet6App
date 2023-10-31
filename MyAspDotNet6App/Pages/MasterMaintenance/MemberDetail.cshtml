@@ -51,12 +51,12 @@
         </div>
         <div class="col-3">
             <label asp-for="JoinedDate" class="form-label"></label>
-            <input asp-for="JoinedDate" type="date" class="form-control" value="@Model.JoinedDate?.ToString(DEFAULT_DATEONLY_FORMAT)" />
+            <input asp-for="JoinedDate" type="date" max="9999-12-31" class="form-control" value="@Model.JoinedDate?.ToString(DEFAULT_DATEONLY_FORMAT)" />
             <span asp-validation-for="JoinedDate"></span>
         </div>
         <div class="col-3">
             <label asp-for="TerminationDate" class="form-label"></label>
-            <input asp-for="TerminationDate" type="date" class="form-control" value="@Model.TerminationDate?.ToString(DEFAULT_DATEONLY_FORMAT)" />
+            <input asp-for="TerminationDate" type="date" max="9999-12-31" class="form-control" value="@Model.TerminationDate?.ToString(DEFAULT_DATEONLY_FORMAT)" />
             <span asp-validation-for="TerminationDate"></span>
         </div>
     </div>
