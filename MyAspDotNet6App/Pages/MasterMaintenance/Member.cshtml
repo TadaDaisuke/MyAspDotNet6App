@@ -78,9 +78,9 @@
                 formData.append("memberCodePart", req.term.trim());
                 formData.append("__RequestVerificationToken", token);
                 fetch("?Handler=SuggestMemberCode", { method: "POST", body: formData })
-                    .then((response) => response.json())
-                    .then((data) => res(data))
-                    .catch((error) => res([]));
+                    .then(response => response.json())
+                    .then(data => res(data))
+                    .catch(error => res([]));
             },
             minLength: 2
         });

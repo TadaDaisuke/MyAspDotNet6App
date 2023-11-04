@@ -7,7 +7,7 @@ const addNewButton = document.querySelector("#addNewButton");
 // 新規登録ボタンクリックイベント
 addNewButton.addEventListener("click", () => fetchAndShowModal("?Handler=GetBlankDetail", new FormData()));
 // 検索結果各行のクリックイベント
-mainTable.addEventListener("click", (e) => {
+mainTable.addEventListener("click", e => {
     let detailKey = e.target.closest("tr")?.getAttribute("data-detail-key");
     if (detailKey) {
         let formData = new FormData();
@@ -22,16 +22,16 @@ function fetchAndShowModal(url, formData) {
     // 詳細の読み込み
     formData.append("__RequestVerificationToken", token);
     fetch(url, { method: "POST", body: formData })
-        .then((response) => {
+        .then(response => {
             if (!response.ok) {
                 throw new Error("読み込みに失敗しました");
             }
             return response.text();
         })
-        .then((text) => {
+        .then(text => {
             modalBodyContent.innerHTML = text;
         })
-        .catch((error) => {
+        .catch(error => {
             modalBodyContent.innerHTML = `<div>${error}</div>`;
         })
         .finally(() => {
@@ -39,11 +39,11 @@ function fetchAndShowModal(url, formData) {
             $(newForm).removeData("validator");
             $(newForm).removeData("unobtrusiveValidation");
             $.validator.unobtrusive.parse($(newForm));
-            newForm.querySelectorAll("input,textarea").forEach((inputElem) => {
+            newForm.querySelectorAll("input,textarea").forEach(inputElem => {
                 inputElem.setAttribute("data-original-value", inputElem.value);
                 inputElem.addEventListener("input", () => enableSaveButton(newForm));
             });
-            newForm.querySelectorAll("select").forEach((dropdownElem) => {
+            newForm.querySelectorAll("select").forEach(dropdownElem => {
                 dropdownElem.setAttribute("data-original-value", dropdownElem.value);
                 dropdownElem.addEventListener("change", () => enableSaveButton(newForm));
             });
@@ -58,7 +58,7 @@ function fetchAndShowModal(url, formData) {
 function enableSaveButton(newFormElem) {
     let canSave = false;
     if ($(newFormElem).valid()) {
-        newFormElem.querySelectorAll("[data-original-value]").forEach((inputElem) => {
+        newFormElem.querySelectorAll("[data-original-value]").forEach(inputElem => {
             if (inputElem.value != inputElem.getAttribute("data-original-value")) {
                 canSave = true;
             }
@@ -76,13 +76,13 @@ saveButton.addEventListener("click", () => {
     let formData = new FormData(document.querySelector("#detailForm"));
     formData.append("__RequestVerificationToken", token);
     fetch("?Handler=SaveDetail", { method: "POST", body: formData })
-        .then((response) => {
+        .then(response => {
             if (!response.ok) {
                 throw new Error("保存に失敗しました");
             }
             return response.text();
         })
-        .then((text) => {
+        .then(text => {
             modalBodyContent.classList.add("d-none");
             modalBodyLoading.classList.remove("d-none");
             alert(text);
@@ -90,7 +90,7 @@ saveButton.addEventListener("click", () => {
                 search();
             }
         })
-        .catch((error) => {
+        .catch(error => {
             alert(error);
             detailModal.show();
         });

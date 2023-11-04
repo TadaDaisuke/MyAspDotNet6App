@@ -18,7 +18,7 @@ let searchParams;
 // 検索ボタンクリックイベント
 searchButton.addEventListener("click", () => search());
 // Enterキー押下イベント
-searchConditionForm.addEventListener("keydown", (e) => {
+searchConditionForm.addEventListener("keydown", e => {
     if (e.keyCode === 13) {
         search();
         e.preventDefault();
@@ -32,8 +32,8 @@ clearButton.addEventListener("click", () => {
     clearResult();
 });
 // 各列のソートボタンクリックイベント
-sortButtons.forEach((button) => {
-    button.addEventListener("click", (e) => {
+sortButtons.forEach(button => {
+    button.addEventListener("click", e => {
         let sortItem = e.currentTarget.getAttribute("data-sort-item");
         sortTypeHidden.value = sortItemHidden.value == sortItem && sortTypeHidden.value == "asc" ? "desc" : "asc";
         sortItemHidden.value = sortItem;
@@ -66,7 +66,7 @@ function clearResult() {
     resultMessage.textContent = "";
     tableHeader.classList.add("d-none");
     tableBody.innerHTML = "";
-    sortButtons.forEach((button) => {
+    sortButtons.forEach(button => {
         if (sortItemHidden.value == button.getAttribute("data-sort-item")) {
             button.innerHTML = sortTypeHidden.value == "asc"
                 ? "<i class='bi bi-sort-alpha-down'></i>"
@@ -88,7 +88,7 @@ function fetchResultRows() {
     tableLoading.classList.remove("d-none");
     searchParams.set("SearchCondition.OffsetRows", offsetRowsHidden.value);
     fetch("?Handler=Search", { method: "POST", body: searchParams })
-        .then((response) => {
+        .then(response => {
             if (response.status === 400) {
                 throw new Error("一定時間操作がなかったため、タイムアウトしました。ページをリロードしてください。");
             } else if (!response.ok) {
@@ -111,10 +111,10 @@ function fetchResultRows() {
             }
             return response.text();
         })
-        .then((text) => {
+        .then(text => {
             tableBody.insertAdjacentHTML("beforeend", text);
         })
-        .catch((error) => {
+        .catch(error => {
             resultMessage.innerHTML = `<span class='text-danger'><i class='bi bi-exclamation-circle-fill'></i> ${error.message}</span>`;
         })
         .finally(() => {
@@ -126,20 +126,20 @@ function fetchResultRows() {
 function downloadExcel() {
     let downloadFileName;
     fetch("?Handler=DownloadExcel", { method: "POST", body: new URLSearchParams(new FormData(searchConditionForm)) })
-        .then((response) => {
+        .then(response => {
             if (!response.ok) {
                 throw new Error("ダウンロードに失敗しました");
             }
             downloadFileName = response.headers.get("X-download-file-name");
             return response.blob();
         })
-        .then((blob) => {
+        .then(blob => {
             const a = document.createElement("a");
             a.href = window.URL.createObjectURL(blob);
             a.download = downloadFileName;
             a.click();
         })
-        .catch((error) => {
+        .catch(error => {
             alert(error);
         });
 }
